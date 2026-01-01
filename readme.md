@@ -34,3 +34,10 @@ If you want to customize features, you can modify the source code yourself or su
 This application is still basic and for entertainment purposes only. The developer assumes no responsibility.
 
 ---
+## 开源协议 / License
+
+本项目已贡献至公有领域。您可以自由地使用、复制、修改和分发本软件，无需保留原作者信息或许可声明。
+
+This project has been dedicated to the public domain. You are free to use, copy, modify, and distribute this software without retaining author information or license notice.
+
+---
