@@ -1,0 +1,130 @@
+﻿<Window x:Class="AITrade.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:converters="clr-namespace:AITrade.Converters"
+        xmlns:local="clr-namespace:AITrade"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=local:MainViewModel, IsDesignTimeCreatable=True}"
+        Title="{Binding MenuItem.MainTitle}" Height="450" Width="800">
+    <Window.DataContext>
+        <local:MainViewModel />
+    </Window.DataContext>
+    <Window.Resources>
+        <converters:BoolToStatusConverter x:Key="BoolToStatusConverter"/>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <StackPanel Orientation="Horizontal" Grid.Column="0">
+                <Button Content="{Binding MenuItem.BtnSetApiInfo}" Margin="2,0,2,0" Command="{Binding ImportWalletCommand}" Height="22" IsEnabled="{Binding IsNotRunning}"/>
+                <Label Content="{Binding MenuItem.LblBinanceApiStatus}" />
+                <Label Content="{Binding AccountData.ApiStatus, Converter={StaticResource BoolToStatusConverter}}" />
+                <Label Content="{Binding MenuItem.LblDeepSeekApiStatus}" />
+                <Label Content="{Binding IsAiKeyEffective, Converter={StaticResource BoolToStatusConverter}}" />
+            </StackPanel>
+            <ComboBox Grid.Column="1" 
+              ItemsSource="{Binding AvailableLanguages}" 
+              SelectedItem="{Binding SelectedLanguage}" 
+              Width="120" 
+              HorizontalAlignment="Right"
+              Margin="8,0,0,0"/>
+        </Grid>
+        <StackPanel Orientation="Horizontal" Grid.Row="1">
+            <Label Content="{Binding MenuItem.LblBalance}" />
+            <Label Content="{Binding AccountData.Balance}" />
+            <Label Content="{Binding MenuItem.LblAvailableBalance}" />
+            <Label Content="{Binding AccountData.AvailableBalance}" />
+            <Label Content="{Binding MenuItem.LblTotalUnrealizedProfit}" />
+            <Label Content="{Binding AccountData.TotalUnrealizedProfit}" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Grid.Row="2">
+            <Button Height="22" Content="{Binding MenuItem.BtnStart}" Width="50" Margin="2,0,2,0" IsEnabled="{Binding IsNotRunning}" Command="{Binding StartCommand}"/>
+            <Button Height="22" Content="{Binding MenuItem.BtnStop}" Width="50" Margin="2,0,2,0" IsEnabled="{Binding IsRunning}" Command="{Binding EndCommand}"/>
+            <Label Content="{Binding MenuItem.LblStatus}"/>
+            <Label Content="{Binding Status}"/>
+            <!--<Button Height="22" Content="Close all position and stop" Margin="2,0,2,0" Command="{Binding CloseAllPositionCommand}"/>-->
+            <!--<Button Height="22" Content="Test AI trader" Margin="2,0,2,0" Command="{Binding TestAiTraderCommand}"/>-->
+        </StackPanel>
+        <ScrollViewer Grid.Row="3" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+            <TabControl>
+                <TabItem Header="{Binding MenuItem.TabPositions}">
+                    <DataGrid ItemsSource="{Binding Positions}" AutoGenerateColumns="False" CanUserAddRows="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn x:Name="colSide" Binding="{Binding Side}" />
+                            <DataGridTextColumn x:Name="colCoin" Binding="{Binding Coin}" />
+                            <DataGridTextColumn x:Name="colLeverage" Binding="{Binding Leverage}" />
+                            <DataGridTextColumn x:Name="colQuantity" Binding="{Binding Quantity}" />
+                            <DataGridTextColumn x:Name="colEntryPrice" Binding="{Binding EntryPrice}" />
+                            <DataGridTextColumn x:Name="colCurrentPrice" Binding="{Binding CurrentPrice}" />
+                            <DataGridTextColumn x:Name="colEntryAmount" Binding="{Binding EntryAmount}" />
+                            <DataGridTextColumn x:Name="colCurrentAmount" Binding="{Binding CurrentAmount}" />
+                            <DataGridTextColumn x:Name="colUnrealizedProfit" Binding="{Binding UnrealizedProfit}" />
+                            <DataGridTemplateColumn x:Name="colAction" Width="Auto">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Content="{Binding DataContext.MenuItem.BtnClose, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                Padding="8,2" Height="22"
+                                                Command="{Binding DataContext.ClosePositionCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                CommandParameter="{Binding}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </TabItem>
+                <TabItem Header="{Binding MenuItem.TabCompletedTrades}">
+                    <DataGrid ItemsSource="{Binding CompletedTrades}" AutoGenerateColumns="False" CanUserAddRows="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn x:Name="colCompletedSide" Binding="{Binding Side}" />
+                            <DataGridTextColumn x:Name="colCompletedCoin" Binding="{Binding Coin}" />
+                            <DataGridTextColumn x:Name="colCompletedQuantity" Binding="{Binding Quantity}" />
+                            <DataGridTextColumn x:Name="colCompletedPrice" Binding="{Binding CompletedPrice}" />
+                            <DataGridTextColumn x:Name="colCompletedRealizedProfit" Binding="{Binding RealizedProfit}" />
+                            <DataGridTextColumn x:Name="colCompletedTimestamp" Binding="{Binding Timestamp}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </TabItem>
+                <TabItem Header="{Binding MenuItem.TabTradeLogs}">
+                    <ItemsControl ItemsSource="{Binding AiTradeLogs}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Expander Header="{Binding Title}">
+                                    <Grid Margin="0 8 0 0">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
+                                        <StackPanel Orientation="Horizontal"  Grid.Row="0" Margin="0 8 0 0">
+                                            <Label Content="{Binding DataContext.MenuItem.LblCoTTrace, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                            <TextBlock Text="{Binding CoTTrace}" TextWrapping="Wrap" Width="650"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal"  Grid.Row="1" Margin="0 8 0 0">
+                                            <Label Content="{Binding DataContext.MenuItem.LblDecisions, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                            <DataGrid ItemsSource="{Binding Decisions}" AutoGenerateColumns="True" CanUserAddRows="False" />
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Grid.Row="2" Margin="0 8 0 0">
+                                            <Label Content="{Binding DataContext.MenuItem.LblInputPrompt, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                            <Button Content="{Binding DataContext.MenuItem.BtnShow, RelativeSource={RelativeSource AncestorType=Window}}" Padding="8,2" Height="22" Click="ShowInputPrompt_Click" Tag="{Binding InputPrompt}" />
+                                        </StackPanel>
+                                    </Grid>
+                                </Expander>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </TabItem>
+            </TabControl>
+        </ScrollViewer>
+    </Grid>
+</Window>

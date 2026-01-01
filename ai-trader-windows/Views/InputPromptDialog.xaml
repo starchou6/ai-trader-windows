@@ -1,0 +1,13 @@
+﻿<Window x:Class="AITrade.InputPromptDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="InputPrompt" Height="300" Width="500" WindowStartupLocation="CenterOwner" ResizeMode="CanResize">
+    <Grid Margin="8">
+        <TextBox x:Name="PromptTextBox"
+                 IsReadOnly="True"
+                 TextWrapping="Wrap"
+                 VerticalScrollBarVisibility="Auto"
+                 HorizontalScrollBarVisibility="Auto"/>
+        <!--<Button Content="Close" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="80" Margin="0,0,0,10" Click="Close_Click"/>-->
+    </Grid>
+</Window>
