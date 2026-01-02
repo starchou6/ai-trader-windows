@@ -62,7 +62,7 @@
                     <DataGrid ItemsSource="{Binding Positions}" AutoGenerateColumns="False" CanUserAddRows="False">
                         <DataGrid.Columns>
                             <DataGridTextColumn x:Name="colSide" Binding="{Binding Side}" />
-                            <DataGridTextColumn x:Name="colCoin" Binding="{Binding Coin}" />
+                            <DataGridTextColumn x:Name="colCoin" Binding="{Binding Symbol}" />
                             <DataGridTextColumn x:Name="colLeverage" Binding="{Binding Leverage}" />
                             <DataGridTextColumn x:Name="colQuantity" Binding="{Binding Quantity}" />
                             <DataGridTextColumn x:Name="colEntryPrice" Binding="{Binding EntryPrice}" />
