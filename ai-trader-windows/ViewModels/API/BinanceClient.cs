@@ -84,17 +84,16 @@ namespace AITrade.API
                 var levResult = await restClient.UsdFuturesApi.Account.ChangeInitialLeverageAsync(symbol, leverage);
                 if (!levResult.Success)
                 {
-                    // 可根据需要抛出异常或返回 null
-                    return null;
+                    throw new Exception($"设置杠杆失败: {levResult.Error?.Message}");
                 }
             }
             // 修正数量和价格到合约允许的精度
             var exchangeInfoResult = await restClient.UsdFuturesApi.ExchangeData.GetExchangeInfoAsync();
             if (!exchangeInfoResult.Success)
-                return null;
+                throw new Exception($"获取交易对信息失败: {exchangeInfoResult.Error?.Message}");
             var symbolInfo = exchangeInfoResult.Data.Symbols.FirstOrDefault(s => s.Name == symbol);
             if (symbolInfo == null)
-                return null;
+                throw new Exception($"未找到交易对信息: {symbol}");
 
             var fixedQuantity = TruncateDecimal(quantity, symbolInfo.QuantityPrecision);
 
@@ -108,13 +107,13 @@ namespace AITrade.API
             );
             if (!orderResult.Success)
             {
-                return null;
+                throw new Exception($"下主单出错: {orderResult.Error?.Message}");
             }
 
             // 2. 下止盈单
             if (takeProfit.HasValue)
             {
-                var slResult = await restClient.UsdFuturesApi.Trading.PlaceConditionalOrderAsync(
+                var tpResult = await restClient.UsdFuturesApi.Trading.PlaceConditionalOrderAsync(
                     symbol: symbol,
                     side: side == Binance.Net.Enums.OrderSide.Buy ? Binance.Net.Enums.OrderSide.Sell : Binance.Net.Enums.OrderSide.Buy,
                     type: Binance.Net.Enums.ConditionalOrderType.TakeProfitMarket,
@@ -122,10 +121,9 @@ namespace AITrade.API
                     triggerPrice: takeProfit,
                     reduceOnly: true
                 );
-                if (!slResult.Success)
+                if (!tpResult.Success)
                 {
-                    // 记录错误信息
-                    System.Diagnostics.Debug.WriteLine("下止盈单出错：" + slResult.Error?.Message);
+                    throw new Exception($"下止盈单出错: {tpResult.Error?.Message}");
                 }
             }
 
@@ -142,8 +140,7 @@ namespace AITrade.API
                 );
                 if (!slResult.Success)
                 {
-                    // 记录错误信息
-                    System.Diagnostics.Debug.WriteLine("下止损单出错：" + slResult.Error?.Message);
+                    throw new Exception($"下止损单出错: {slResult.Error?.Message}");
                 }
             }
 

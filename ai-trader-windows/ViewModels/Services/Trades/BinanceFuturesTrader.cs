@@ -55,7 +55,7 @@ namespace AITrade.Services.Trades
                 Binance.Net.Enums.OrderSide.Sell,
                 Binance.Net.Enums.FuturesOrderType.Market
             );
-            return result.Id;
+            return result?.Id;
         }
         public async Task<long?> CloseShort(string symbol, double quantity)
         {

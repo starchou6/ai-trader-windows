@@ -520,8 +520,14 @@ namespace AITrade.Services
             var qty = d.PositionSizeUSD / md.CurrentPrice;
             ar.Quantity = qty;
             ar.Price = md.CurrentPrice;
-
-            ar.OrderID = await _trader.OpenLong(d.Symbol, qty, d.Leverage, (decimal)d.TakeProfit, (decimal)d.StopLoss);
+            try
+            {
+                ar.OrderID = await _trader.OpenLong(d.Symbol, qty, d.Leverage, (decimal)d.TakeProfit, (decimal)d.StopLoss);
+            }
+            catch (Exception ex)
+            {
+                return new Exception($"开多仓失败: {ex.Message}");
+            }
             if (ar.OrderID is null || ar.OrderID == 0)
             {
                 return new Exception("❌ 开多仓失败，订单ID为空或无效");
@@ -551,7 +557,14 @@ namespace AITrade.Services
             ar.Quantity = qty;
             ar.Price = md.CurrentPrice;
 
-            ar.OrderID = await _trader.OpenShort(d.Symbol, qty, d.Leverage, (decimal)d.TakeProfit, (decimal)d.StopLoss);
+            try
+            {
+                ar.OrderID = await _trader.OpenShort(d.Symbol, qty, d.Leverage, (decimal)d.TakeProfit, (decimal)d.StopLoss);
+            }
+            catch (Exception ex)
+            {
+                return new Exception($"开空仓失败: {ex.Message}");
+            }
             if (ar.OrderID is null || ar.OrderID == 0)
             {
                 return new Exception("❌ 开空仓失败，订单ID为空或无效");
@@ -569,8 +582,14 @@ namespace AITrade.Services
             System.Diagnostics.Debug.WriteLine($"  🔄 平多仓: {d.Symbol}");
             var md = await MarketInfoClient.GetAsync(d.Symbol);
             ar.Price = md.CurrentPrice;
-
-            ar.OrderID = await _trader.CloseLong(d.Symbol, 0);
+            try
+            {
+                ar.OrderID = await _trader.CloseLong(d.Symbol, 0);
+            }
+            catch (Exception ex)
+            {
+                return new Exception($"平多仓失败: {ex.Message}");
+            }
 
             System.Diagnostics.Debug.WriteLine("  ✓ 平仓成功");
             return null;
@@ -581,8 +600,14 @@ namespace AITrade.Services
             System.Diagnostics.Debug.WriteLine($"  🔄 平空仓: {d.Symbol}");
             var md = await MarketInfoClient.GetAsync(d.Symbol);
             ar.Price = md.CurrentPrice;
-
-            ar.OrderID = await _trader.CloseShort(d.Symbol, 0);
+            try
+            {
+                ar.OrderID = await _trader.CloseShort(d.Symbol, 0);
+            }
+            catch (Exception ex)
+            {
+                return new Exception($"平空仓失败: {ex.Message}");
+            }
 
             System.Diagnostics.Debug.WriteLine("  ✓ 平仓成功");
             return null;

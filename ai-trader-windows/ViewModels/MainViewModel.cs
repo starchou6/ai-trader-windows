@@ -385,22 +385,25 @@ namespace AITrade
         {
             // 平仓逻辑
             var binanceClient = new BinanceClient(_apiKey, _apiSecret);
-            var order = await binanceClient.PlaceOrder(
-                symbol: pos.Symbol,
-                quantity: pos.Quantity,
-                price: null,
-                side: pos.Side == PositionConstants.LONG ? Binance.Net.Enums.OrderSide.Sell : Binance.Net.Enums.OrderSide.Buy,
-                orderType: Binance.Net.Enums.FuturesOrderType.Market
-            );
-            if (order != null)
+            try
             {
-                await LoadInfoStateAsync();
+                var order = await binanceClient.PlaceOrder(
+                    symbol: pos.Symbol,
+                    quantity: pos.Quantity,
+                    price: null,
+                    side: pos.Side == PositionConstants.LONG ? Binance.Net.Enums.OrderSide.Sell : Binance.Net.Enums.OrderSide.Buy,
+                    orderType: Binance.Net.Enums.FuturesOrderType.Market
+                );
+                if (order != null)
+                {
+                    await LoadInfoStateAsync();
+                }
             }
-            else
+            catch (Exception ex)
             {
                 await App.Current.Dispatcher.InvokeAsync(() =>
                 {
-                    MessageBox.Show($"Failed to close position for {pos.Symbol}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"平仓失败: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 });
             }
         }
