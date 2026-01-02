@@ -350,7 +350,7 @@ namespace AITrade.Services
                     Success = false
                 };
 
-                Exception? ex = await ExecuteDecisionWithRecord(d, action);
+                Exception? ex = await ExecuteDecisionWithRecord(d, action, ctx.Positions);
                 if (ex != null)
                 {
                     System.Diagnostics.Debug.WriteLine($"❌ 执行决策失败 ({d.Symbol} {d.Action}): {ex.Message}");
@@ -484,7 +484,7 @@ namespace AITrade.Services
         }
 
         // -------------------- Execute Decisions --------------------
-        private async Task<Exception?> ExecuteDecisionWithRecord(Decision d, DecisionAction actionRecord)
+        private async Task<Exception?> ExecuteDecisionWithRecord(Decision d, DecisionAction actionRecord, List<PositionInfo> positionInfos)
         {
             try
             {
@@ -492,8 +492,8 @@ namespace AITrade.Services
                 {
                     "open_long" => await ExecuteOpenLongWithRecord(d, actionRecord),
                     "open_short" => await ExecuteOpenShortWithRecord(d, actionRecord),
-                    "close_long" => await ExecuteCloseLongWithRecord(d, actionRecord),
-                    "close_short" => await ExecuteCloseShortWithRecord(d, actionRecord),
+                    "close_long" => await ExecuteCloseLongWithRecord(d, actionRecord, positionInfos),
+                    "close_short" => await ExecuteCloseShortWithRecord(d, actionRecord, positionInfos),
                     "hold" or "wait" => null,
                     _ => new Exception($"未知的action: {d.Action}")
                 };
@@ -517,7 +517,7 @@ namespace AITrade.Services
             catch { /* why: 读取持仓失败时不阻断，保持容错 */ }
 
             var md = await MarketInfoClient.GetAsync(d.Symbol);
-            var qty = d.PositionSizeUSD / md.CurrentPrice;
+            var qty = d.PositionSizeUSD * d.Leverage / md.CurrentPrice;
             ar.Quantity = qty;
             ar.Price = md.CurrentPrice;
             try
@@ -553,7 +553,7 @@ namespace AITrade.Services
             catch { }
 
             var md = await MarketInfoClient.GetAsync(d.Symbol);
-            var qty = d.PositionSizeUSD / md.CurrentPrice;
+            var qty = d.PositionSizeUSD * d.Leverage / md.CurrentPrice;
             ar.Quantity = qty;
             ar.Price = md.CurrentPrice;
 
@@ -577,14 +577,20 @@ namespace AITrade.Services
             return null;
         }
 
-        private async Task<Exception?> ExecuteCloseLongWithRecord(Decision d, DecisionAction ar)
+        private async Task<Exception?> ExecuteCloseLongWithRecord(Decision d, DecisionAction ar, List<PositionInfo> positionInfos)
         {
+            var position = positionInfos.FirstOrDefault(p => p.Symbol == d.Symbol && p.Side == PositionConstants.LONG);
+            if (position == null)
+            {
+                return new Exception($"❌ {d.Symbol} 无多仓可平");
+            }
             System.Diagnostics.Debug.WriteLine($"  🔄 平多仓: {d.Symbol}");
             var md = await MarketInfoClient.GetAsync(d.Symbol);
+            ar.Quantity = position.Quantity;
             ar.Price = md.CurrentPrice;
             try
             {
-                ar.OrderID = await _trader.CloseLong(d.Symbol, 0);
+                ar.OrderID = await _trader.CloseLong(d.Symbol, position.Quantity);
             }
             catch (Exception ex)
             {
@@ -595,14 +601,20 @@ namespace AITrade.Services
             return null;
         }
 
-        private async Task<Exception?> ExecuteCloseShortWithRecord(Decision d, DecisionAction ar)
+        private async Task<Exception?> ExecuteCloseShortWithRecord(Decision d, DecisionAction ar, List<PositionInfo> positionInfos)
         {
+            var position = positionInfos.FirstOrDefault(p => p.Symbol == d.Symbol && p.Side == PositionConstants.SHORT);
+            if (position == null)
+            {
+                return new Exception($"❌ {d.Symbol} 无空仓可平");
+            }
             System.Diagnostics.Debug.WriteLine($"  🔄 平空仓: {d.Symbol}");
             var md = await MarketInfoClient.GetAsync(d.Symbol);
+            ar.Quantity = position.Quantity;
             ar.Price = md.CurrentPrice;
             try
             {
-                ar.OrderID = await _trader.CloseShort(d.Symbol, 0);
+                ar.OrderID = await _trader.CloseShort(d.Symbol, position.Quantity);
             }
             catch (Exception ex)
             {
