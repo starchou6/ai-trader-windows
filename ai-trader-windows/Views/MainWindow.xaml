@@ -107,12 +107,12 @@
                                             <RowDefinition Height="*"/>
                                         </Grid.RowDefinitions>
                                         <StackPanel Orientation="Horizontal"  Grid.Row="0" Margin="0 8 0 0">
-                                            <Label Content="{Binding DataContext.MenuItem.LblCoTTrace, RelativeSource={RelativeSource AncestorType=Window}}" />
-                                            <TextBlock Text="{Binding CoTTrace}" TextWrapping="Wrap" Width="650"/>
-                                        </StackPanel>
-                                        <StackPanel Orientation="Horizontal"  Grid.Row="1" Margin="0 8 0 0">
                                             <Label Content="{Binding DataContext.MenuItem.LblDecisions, RelativeSource={RelativeSource AncestorType=Window}}" />
                                             <DataGrid ItemsSource="{Binding Decisions}" AutoGenerateColumns="True" CanUserAddRows="False" />
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal"  Grid.Row="1" Margin="0 8 0 0">
+                                            <Label Content="{Binding DataContext.MenuItem.LblCoTTrace, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                            <TextBlock Text="{Binding CoTTrace}" TextWrapping="Wrap" Width="650"/>
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal" Grid.Row="2" Margin="0 8 0 0">
                                             <Label Content="{Binding DataContext.MenuItem.LblInputPrompt, RelativeSource={RelativeSource AncestorType=Window}}" />
