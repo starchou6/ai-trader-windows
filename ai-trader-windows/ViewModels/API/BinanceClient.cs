@@ -114,27 +114,37 @@ namespace AITrade.API
             // 2. 下止盈单
             if (takeProfit.HasValue)
             {
-                await restClient.UsdFuturesApi.Trading.PlaceOrderAsync(
+                var slResult = await restClient.UsdFuturesApi.Trading.PlaceConditionalOrderAsync(
                     symbol: symbol,
                     side: side == Binance.Net.Enums.OrderSide.Buy ? Binance.Net.Enums.OrderSide.Sell : Binance.Net.Enums.OrderSide.Buy,
-                    type: Binance.Net.Enums.FuturesOrderType.TakeProfitMarket,
+                    type: Binance.Net.Enums.ConditionalOrderType.TakeProfitMarket,
                     quantity: fixedQuantity,
-                    stopPrice: takeProfit,
+                    triggerPrice: takeProfit,
                     reduceOnly: true
                 );
+                if (!slResult.Success)
+                {
+                    // 记录错误信息
+                    System.Diagnostics.Debug.WriteLine("下止盈单出错：" + slResult.Error?.Message);
+                }
             }
 
             // 3. 下止损单
             if (stopLoss.HasValue)
             {
-                await restClient.UsdFuturesApi.Trading.PlaceOrderAsync(
+                var slResult = await restClient.UsdFuturesApi.Trading.PlaceConditionalOrderAsync(
                     symbol: symbol,
                     side: side == Binance.Net.Enums.OrderSide.Buy ? Binance.Net.Enums.OrderSide.Sell : Binance.Net.Enums.OrderSide.Buy,
-                    type: Binance.Net.Enums.FuturesOrderType.StopMarket,
+                    type: Binance.Net.Enums.ConditionalOrderType.StopMarket,
                     quantity: fixedQuantity,
-                    stopPrice: stopLoss,
+                    triggerPrice: stopLoss,
                     reduceOnly: true
                 );
+                if (!slResult.Success)
+                {
+                    // 记录错误信息
+                    System.Diagnostics.Debug.WriteLine("下止损单出错：" + slResult.Error?.Message);
+                }
             }
 
             return orderResult.Data;
