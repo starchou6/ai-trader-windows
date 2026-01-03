@@ -34,6 +34,41 @@ namespace AITrade
         #endregion
 
         #region 画面绑定属性
+        public bool CanPrevPage => CurrentPage > 0;
+        public bool CanNextPage => CurrentPage < TotalPageCount - 1;
+
+        private int _currentPage = 0;
+        public int CurrentPage
+        {
+            get => _currentPage;
+            set
+            {
+                if (_currentPage != value)
+                {
+                    _currentPage = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(CanPrevPage));
+                    OnPropertyChanged(nameof(CanNextPage));
+                    LoadTradeLogsPage();
+                }
+            }
+        }
+
+        public int PageSize { get; set; } = 10;
+
+        private int _totalPageCount = 0;
+        public int TotalPageCount
+        {
+            get => _totalPageCount;
+            set
+            {
+                _totalPageCount = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(CanPrevPage));
+                OnPropertyChanged(nameof(CanNextPage));
+            }
+        }
+
         private ObservableCollection<string> _availableLanguages = [.. CommonConstants.LANGUAGE_LIST];
         public ObservableCollection<string> AvailableLanguages
         {
@@ -118,6 +153,8 @@ namespace AITrade
         #endregion
 
         #region Command
+        public ICommand NextPageCommand { get; }
+        public ICommand PrevPageCommand { get; }
         public ICommand ImportWalletCommand { get; }
         public ICommand StartCommand { get; }
         public ICommand EndCommand { get; }
@@ -137,6 +174,8 @@ namespace AITrade
             );
             CloseAllPositionCommand = new RelayCommand(CloseAllPosition);
             TestAiTraderCommand = new RelayCommand(TestAiTrader);
+            NextPageCommand = new RelayCommand(_ => { if (CurrentPage < TotalPageCount - 1) CurrentPage++; });
+            PrevPageCommand = new RelayCommand(_ => { if (CurrentPage > 0) CurrentPage--; });
             #region language setting
             if (File.Exists(LANGUAGE_SETTING_FILE_NAME))
             {
@@ -345,7 +384,7 @@ namespace AITrade
                 {
                     await App.Current.Dispatcher.InvokeAsync(() =>
                     {
-                        AiTradeLogs = [.. ReadAllRecords()];
+                        LoadTradeLogsPage();
                     });
                     // 每隔60秒钟检查一次日志
                     await Task.Delay(60000).ConfigureAwait(false);
@@ -360,9 +399,14 @@ namespace AITrade
             }
         }
 
-        public DecisionRecord[] ReadAllRecords()
+        private DecisionRecord[] ReadRecordsByPage(int pageIndex, int pageSize)
         {
-            var files = Directory.GetFiles(_logDir, "*.json").OrderByDescending(f => f).Take(10).ToArray();
+            var files = Directory.GetFiles(_logDir, "*.json")
+                .OrderByDescending(f => f)
+                .Skip(pageIndex * pageSize)
+                .Take(pageSize)
+                .ToArray();
+
             var list = new List<DecisionRecord>();
             foreach (var file in files)
             {
@@ -375,10 +419,29 @@ namespace AITrade
                 }
                 catch
                 {
-                    // todo 可根据需要记录或忽略异常
+                    // 可根据需要记录或忽略异常
                 }
             }
             return [.. list];
+        }
+
+        private int GetTotalRecordCount()
+        {
+            if (string.IsNullOrEmpty(_logDir) || !Directory.Exists(_logDir))
+                return 0;
+            return Directory.GetFiles(_logDir, "*.json").Length;
+        }
+
+        private int GetTotalPageCount(int pageSize)
+        {
+            int totalCount = GetTotalRecordCount();
+            return (totalCount + pageSize - 1) / pageSize;
+        }
+
+        private void LoadTradeLogsPage()
+        {
+            TotalPageCount = GetTotalPageCount(PageSize);
+            AiTradeLogs = [.. ReadRecordsByPage(CurrentPage, PageSize)];
         }
 
         private async Task ClosePosition(PositionData pos)
