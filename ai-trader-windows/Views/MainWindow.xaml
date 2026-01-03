@@ -7,12 +7,13 @@
         xmlns:local="clr-namespace:AITrade"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=local:MainViewModel, IsDesignTimeCreatable=True}"
-        Title="{Binding MenuItem.MainTitle}" Height="960" Width="1080">
+        Title="{Binding MenuItem.MainTitle}" Height="600" Width="800">
     <Window.DataContext>
         <local:MainViewModel />
     </Window.DataContext>
     <Window.Resources>
         <converters:BoolToStatusConverter x:Key="BoolToStatusConverter"/>
+        <converters:BoolToBrushConverter x:Key="BoolToBrushConverter" TrueBrush="LimeGreen" FalseBrush="Crimson"/>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -27,11 +28,11 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <StackPanel Orientation="Horizontal" Grid.Column="0">
-                <Button Content="{Binding MenuItem.BtnSetApiInfo}" Margin="2,0,2,0" Command="{Binding ImportWalletCommand}" Height="22" IsEnabled="{Binding IsNotRunning}"/>
-                <Label Content="{Binding MenuItem.LblBinanceApiStatus}" />
-                <Label Content="{Binding AccountData.ApiStatus, Converter={StaticResource BoolToStatusConverter}}" />
-                <Label Content="{Binding MenuItem.LblDeepSeekApiStatus}" />
-                <Label Content="{Binding IsAiKeyEffective, Converter={StaticResource BoolToStatusConverter}}" />
+                <Button Content="{Binding MenuItem.BtnSetApiInfo}" Margin="4,0,0,0" Command="{Binding ImportWalletCommand}" Height="22" IsEnabled="{Binding IsNotRunning}"/>
+                <Label Margin="4,0,0,0" Content="{Binding MenuItem.LblBinanceApiStatus}" />
+                <Rectangle Width="16" Height="16" Fill="{Binding AccountData.ApiStatus, Converter={StaticResource BoolToBrushConverter}}"/>
+                <Label Margin="4,0,0,0" Content="{Binding MenuItem.LblDeepSeekApiStatus}" />
+                <Rectangle Width="16" Height="16" Fill="{Binding IsAiKeyEffective, Converter={StaticResource BoolToBrushConverter}}"/>
             </StackPanel>
             <ComboBox Grid.Column="1" 
               ItemsSource="{Binding AvailableLanguages}" 
@@ -49,10 +50,10 @@
             <Label Content="{Binding AccountData.TotalUnrealizedProfit}" />
         </StackPanel>
         <StackPanel Orientation="Horizontal" Grid.Row="2">
-            <Button Height="22" Content="{Binding MenuItem.BtnStart}" Width="50" Margin="2,0,2,0" IsEnabled="{Binding IsNotRunning}" Command="{Binding StartCommand}"/>
-            <Button Height="22" Content="{Binding MenuItem.BtnStop}" Width="50" Margin="2,0,2,0" IsEnabled="{Binding IsRunning}" Command="{Binding EndCommand}"/>
+            <Button Height="22" Content="{Binding MenuItem.BtnStart}" Width="50" Margin="4,0,0,0" IsEnabled="{Binding IsNotRunning}" Command="{Binding StartCommand}"/>
+            <Button Height="22" Content="{Binding MenuItem.BtnStop}" Width="50" Margin="4,0,0,0" IsEnabled="{Binding IsRunning}" Command="{Binding EndCommand}"/>
             <Label Content="{Binding MenuItem.LblStatus}"/>
-            <Label Content="{Binding Status}"/>
+            <Rectangle Width="16" Height="16" Fill="{Binding IsRunning, Converter={StaticResource BoolToBrushConverter}}"/>
             <!--<Button Height="22" Content="Close all position and stop" Margin="2,0,2,0" Command="{Binding CloseAllPositionCommand}"/>-->
             <!--<Button Height="22" Content="Test AI trader" Margin="2,0,2,0" Command="{Binding TestAiTraderCommand}"/>-->
         </StackPanel>
