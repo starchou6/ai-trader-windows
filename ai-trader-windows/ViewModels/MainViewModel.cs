@@ -107,6 +107,17 @@ namespace AITrade
             }
         }
 
+        private int _scanInterval = 180;
+        public int ScanInterval
+        {
+            get => _scanInterval;
+            set
+            {
+                _scanInterval = value;
+                OnPropertyChanged();
+            }
+        }
+
         private ObservableCollection<DecisionRecord> _aiTradeLogs;
         public ObservableCollection<DecisionRecord> AiTradeLogs
         {
@@ -299,7 +310,7 @@ namespace AITrade
                 InitialBalance = 500,
                 BinanceAPIKey = _apiKey,
                 BinanceSecretKey = _apiSecret,
-                ScanInterval = TimeSpan.FromSeconds(180),
+                ScanInterval = TimeSpan.FromSeconds(ScanInterval),
                 BTCETHLeverage = 20,
                 AltcoinLeverage = 10,
                 LogDirectory = _logDir,

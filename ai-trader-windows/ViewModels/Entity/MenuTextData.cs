@@ -40,6 +40,20 @@ namespace AITrade.ViewModels.Entity
             set { _lblDeepSeekApiStatus = value; OnPropertyChanged(); }
         }
 
+        private string _lblPeriod;
+        public string LblPeriod
+        {
+            get => _lblPeriod;
+            set { _lblPeriod = value; OnPropertyChanged(); }
+        }
+
+        private string _lblPeriodUnit;
+        public string LblPeriodUnit
+        {
+            get => _lblPeriodUnit;
+            set { _lblPeriodUnit = value; OnPropertyChanged(); }
+        }
+
         private string _lblBalance;
         public string LblBalance
         {

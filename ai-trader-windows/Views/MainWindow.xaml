@@ -33,6 +33,9 @@
                 <Rectangle Width="16" Height="16" Fill="{Binding AccountData.ApiStatus, Converter={StaticResource BoolToBrushConverter}}"/>
                 <Label Margin="4,0,0,0" Content="{Binding MenuItem.LblDeepSeekApiStatus}" />
                 <Rectangle Width="16" Height="16" Fill="{Binding IsAiKeyEffective, Converter={StaticResource BoolToBrushConverter}}"/>
+                <Label Margin="4,0,0,0" Content="{Binding MenuItem.LblPeriod}" />
+                <TextBox Width="30" Text="{Binding ScanInterval, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center"/>
+                <Label Margin="4,0,0,0" Content="{Binding MenuItem.LblPeriodUnit}" />
             </StackPanel>
             <ComboBox Grid.Column="1" 
               ItemsSource="{Binding AvailableLanguages}" 
