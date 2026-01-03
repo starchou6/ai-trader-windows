@@ -20,41 +20,6 @@ This is a ready-to-use AI trading software. Simply extract the files and run the
 ---
 ## 准备工作 / Prerequisites
 
-### 1) Binance API 权限 / Binance API Permissions
-
-在 Binance 的 **API Management** 创建/编辑 API Key 时，建议开启以下权限：
-
-- ✅ **Enable Reading（读取权限）**  
-  用于查询：余额、仓位、订单、交易所信息等  
-  Used for: balance/position/order/exchange info queries
-
-- ✅ **Enable Futures（合约权限 / USDⓈ-M Futures Trading）**  
-  用于合约下单/撤单、修改杠杆、查询/修改持仓模式等  
-  Used for: futures trading (place/cancel orders), leverage, position mode, etc.
-
-- ❌ **Withdrawal（提币权限）不要开启**  
-  交易机器人不需要提币权限，开启会显著增加安全风险  
-  Do NOT enable withdrawals for safety
-
-> 提示 / Tip：建议为交易 API Key 设置 **IP 白名单**，并只授予必要权限  
-> Recommendation: use **IP whitelist** and minimum required permissions
-
----
-
-### 2) 修改为单向持仓（One-way Mode）/ Switch to One-way Position Mode
-
-#### 在币安界面手动修改 / Change in Binance UI
-1. 打开 Binance 合约交易界面（USDⓈ-M Futures）  
-   Open Binance Futures (USDⓈ-M) trading page
-2. 点击右上角 **设置（⚙️）** → **Position Mode / 持仓模式**  
-   Settings (⚙️) → Position Mode
-3. 选择 **One-way Mode（单向持仓）**  
-   Select **One-way Mode**
-
-> 注意 / Note：如有未平仓仓位或未成交委托，可能无法切换持仓模式  
-> You may need to close positions/cancel open orders before switching
-## 准备工作 / Prerequisites
-
 ### 0) 获取 DeepSeek API Key 和 Binance API Key  
 Obtain DeepSeek API Key and Binance API Key
 
