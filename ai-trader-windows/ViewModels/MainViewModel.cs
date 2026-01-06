@@ -6,6 +6,7 @@ using AITrade.Entity.AI;
 using AITrade.Services;
 using AITrade.ViewModels.Consts;
 using AITrade.ViewModels.Entity;
+using AITrader.ViewModels.Consts;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
@@ -20,9 +21,6 @@ namespace AITrade
     public class MainViewModel : INotifyPropertyChanged
     {
         #region Const
-        private const string API_INFO_FILE_NAME = "apiInfo.txt";
-        private const string AI_KEY_FILE_NAME = "aiKey.txt";
-        private const string LANGUAGE_SETTING_FILE_NAME = "languageSetting.txt";
         #endregion
 
         #region 私有属性
@@ -85,7 +83,7 @@ namespace AITrade
                 _selectedLanguage = value;
                 OnPropertyChanged();
                 MenuItem = MenuConstants.GetMenuItems(_selectedLanguage);
-                File.WriteAllText(LANGUAGE_SETTING_FILE_NAME, _selectedLanguage);
+                File.WriteAllText(SettingConstants.LANGUAGE_SETTING_FILE_NAME, _selectedLanguage);
             }
         }
 
@@ -188,9 +186,9 @@ namespace AITrade
             NextPageCommand = new RelayCommand(_ => { if (CurrentPage < TotalPageCount - 1) CurrentPage++; });
             PrevPageCommand = new RelayCommand(_ => { if (CurrentPage > 0) CurrentPage--; });
             #region language setting
-            if (File.Exists(LANGUAGE_SETTING_FILE_NAME))
+            if (File.Exists(SettingConstants.LANGUAGE_SETTING_FILE_NAME))
             {
-                var languageCode = File.ReadAllText(LANGUAGE_SETTING_FILE_NAME).Trim();
+                var languageCode = File.ReadAllText(SettingConstants.LANGUAGE_SETTING_FILE_NAME).Trim();
                 if (!string.IsNullOrEmpty(languageCode))
                 {
                     SelectedLanguage = languageCode;
@@ -200,9 +198,9 @@ namespace AITrade
 
             AccountData = new AccountData();
 
-            if (File.Exists(API_INFO_FILE_NAME))
+            if (File.Exists(SettingConstants.API_INFO_FILE_NAME))
             {
-                var apiInfo = File.ReadAllText(API_INFO_FILE_NAME).Trim();
+                var apiInfo = File.ReadAllText(SettingConstants.API_INFO_FILE_NAME).Trim();
                 if (!string.IsNullOrEmpty(apiInfo))
                 {
                     var apiInfos = apiInfo.Split(" ");
@@ -213,9 +211,9 @@ namespace AITrade
                     }
                 }
             }
-            if (File.Exists(AI_KEY_FILE_NAME))
+            if (File.Exists(SettingConstants.AI_KEY_FILE_NAME))
             {
-                var aiKey = File.ReadAllText(AI_KEY_FILE_NAME).Trim();
+                var aiKey = File.ReadAllText(SettingConstants.AI_KEY_FILE_NAME).Trim();
                 if (!string.IsNullOrEmpty(aiKey))
                 {
                     _aiKey = aiKey;
@@ -352,12 +350,12 @@ namespace AITrade
 
         private void SaveApiInfo(string privateKey)
         {
-            System.IO.File.WriteAllText(API_INFO_FILE_NAME, privateKey);
+            System.IO.File.WriteAllText(SettingConstants.API_INFO_FILE_NAME, privateKey);
         }
 
         private void SaveAiKeyInfo(string aiKey)
         {
-            System.IO.File.WriteAllText(AI_KEY_FILE_NAME, aiKey);
+            System.IO.File.WriteAllText(SettingConstants.AI_KEY_FILE_NAME, aiKey);
         }
 
         private async Task RunTradeLoopAsync()
