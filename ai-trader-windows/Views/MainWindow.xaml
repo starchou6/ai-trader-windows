@@ -26,6 +26,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <StackPanel Orientation="Horizontal" Grid.Column="0">
                 <Button Content="{Binding MenuItem.BtnSetApiInfo}" Margin="4,0,0,0" Command="{Binding ImportWalletCommand}" Height="22" IsEnabled="{Binding IsNotRunning}"/>
@@ -33,16 +34,9 @@
                 <Rectangle Width="16" Height="16" Fill="{Binding AccountData.ApiStatus, Converter={StaticResource BoolToBrushConverter}}"/>
                 <Label Margin="4,0,0,0" Content="{Binding MenuItem.LblDeepSeekApiStatus}" />
                 <Rectangle Width="16" Height="16" Fill="{Binding IsAiKeyEffective, Converter={StaticResource BoolToBrushConverter}}"/>
-                <Label Margin="4,0,0,0" Content="{Binding MenuItem.LblPeriod}" />
-                <TextBox Width="30" Text="{Binding ScanInterval, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center"/>
-                <Label Margin="4,0,0,0" Content="{Binding MenuItem.LblPeriodUnit}" />
             </StackPanel>
-            <ComboBox Grid.Column="1" 
-              ItemsSource="{Binding AvailableLanguages}" 
-              SelectedItem="{Binding SelectedLanguage}" 
-              Width="120" 
-              HorizontalAlignment="Right"
-              Margin="8,0,0,0"/>
+            <ComboBox Grid.Column="1" ItemsSource="{Binding AvailableLanguages}" SelectedItem="{Binding SelectedLanguage}" Height="22" Width="120" HorizontalAlignment="Right" Margin="8,0,0,0"/>
+            <Button Grid.Column="2" Content="{Binding MenuItem.BtnSetApiInfo}" Margin="8,0,0,0" Command="{Binding SetTraderCommand}" Height="22" IsEnabled="{Binding IsNotRunning}"/>
         </Grid>
         <StackPanel Orientation="Horizontal" Grid.Row="1">
             <Label Content="{Binding MenuItem.LblBalance}" />

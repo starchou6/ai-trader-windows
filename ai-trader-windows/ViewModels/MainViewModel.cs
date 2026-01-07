@@ -7,6 +7,7 @@ using AITrade.Services;
 using AITrade.ViewModels.Consts;
 using AITrade.ViewModels.Entity;
 using AITrader.ViewModels.Consts;
+using AITrader.Views;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
@@ -162,6 +163,7 @@ namespace AITrade
         #endregion
 
         #region Command
+        public ICommand SetTraderCommand { get; }
         public ICommand NextPageCommand { get; }
         public ICommand PrevPageCommand { get; }
         public ICommand ImportWalletCommand { get; }
@@ -174,6 +176,7 @@ namespace AITrade
 
         public MainViewModel()
         {
+            SetTraderCommand = new RelayCommand(SetTrader);
             ImportWalletCommand = new RelayCommand(ImportWallet);
             StartCommand = new RelayCommand(Start);
             EndCommand = new RelayCommand(End);
@@ -322,6 +325,23 @@ namespace AITrade
             if (!IsRunning) return;
             IsRunning = false;
             _autoTrader.Stop();
+        }
+
+        private void SetTrader(object parameter)
+        {
+            var dialog = new TraderSettingDialog();
+            dialog.ScanInterval.Text = ScanInterval.ToString();
+            if (dialog.ShowDialog() == true)
+            {
+                try
+                {
+                    ScanInterval = int.Parse(dialog.ScanInterval.Text.Trim());
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Failed to set trader: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
         }
 
         private void ImportWallet(object parameter)
