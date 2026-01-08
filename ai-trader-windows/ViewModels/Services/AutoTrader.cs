@@ -49,6 +49,9 @@ namespace AITrade.Services
         // 扫描配置
         public TimeSpan ScanInterval { get; set; } = TimeSpan.FromMinutes(180);
 
+        // 交易币种配置
+        public List<string> SelectedCoins { get; set; } = new List<string>();
+
         // 账户配置
         public double InitialBalance { get; set; } = 1000;
 
@@ -139,6 +142,13 @@ namespace AITrade.Services
             if (!string.IsNullOrWhiteSpace(config.CoinPoolAPIURL))
             {
                 Pool.SetCoinPoolAPI(config.CoinPoolAPIURL);
+            }
+
+            // 设置用户选择的交易币种
+            if (config.SelectedCoins?.Count > 0)
+            {
+                Pool.SetSelectedCoins(config.SelectedCoins);
+                System.Diagnostics.Debug.WriteLine($"📋 [{config.Name}] 使用用户选择的 {config.SelectedCoins.Count} 个交易币种");
             }
 
             var exchange = string.IsNullOrWhiteSpace(config.Exchange) ? "binance" : config.Exchange;

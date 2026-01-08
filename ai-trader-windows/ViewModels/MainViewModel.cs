@@ -222,6 +222,15 @@ namespace AITrade
                     _aiKey = aiKey;
                 }
             }
+            if (File.Exists(SettingConstants.TRADER_SETTING_FILE_NAME))
+            {
+                var json = File.ReadAllText(SettingConstants.TRADER_SETTING_FILE_NAME);
+                var setting = JsonSerializer.Deserialize<TraderSetting>(json, CommonConstants.CachedJsonSerializerOptions);
+                if (setting != null)
+                {
+                    ScanInterval = setting.ScanInterval;
+                }
+            }
             AccountData.ApiStatus = false;
             _ = LoadInfoStateAsync();
             IsAiKeyEffective = false;
@@ -301,6 +310,19 @@ namespace AITrade
             _logDir = Path.Combine("decision_logs", traderId);
             _ = Task.Run(RunTradeLoopAsync);
             _ = Task.Run(GetLogAsync);
+
+            // 从设置文件读取选中的交易币种
+            var selectedCoins = new List<string>();
+            if (File.Exists(SettingConstants.TRADER_SETTING_FILE_NAME))
+            {
+                var json = File.ReadAllText(SettingConstants.TRADER_SETTING_FILE_NAME);
+                var setting = JsonSerializer.Deserialize<TraderSetting>(json, CommonConstants.CachedJsonSerializerOptions);
+                if (setting?.SelectedCoins != null)
+                {
+                    selectedCoins = setting.SelectedCoins;
+                }
+            }
+
             var cfg = new AutoTraderConfig
             {
                 ID = traderId,
@@ -315,6 +337,7 @@ namespace AITrade
                 BTCETHLeverage = 20,
                 AltcoinLeverage = 10,
                 LogDirectory = _logDir,
+                SelectedCoins = selectedCoins,
             };
             _autoTrader = AutoTrader.Create(cfg);
             _ = Task.Run(() => _autoTrader.Run());
@@ -327,21 +350,63 @@ namespace AITrade
             _autoTrader.Stop();
         }
 
-        private void SetTrader(object parameter)
+        private async void SetTrader(object parameter)
         {
-            var dialog = new TraderSettingDialog();
+            var availableCoins = new List<string>();
+            var selectedCoins = new List<string>();
+
+            // Load saved selected coins
+            if (File.Exists(SettingConstants.TRADER_SETTING_FILE_NAME))
+            {
+                var json = File.ReadAllText(SettingConstants.TRADER_SETTING_FILE_NAME);
+                var setting = JsonSerializer.Deserialize<TraderSetting>(json, CommonConstants.CachedJsonSerializerOptions);
+                if (setting?.SelectedCoins != null)
+                {
+                    selectedCoins = setting.SelectedCoins;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(_apiKey) && !string.IsNullOrEmpty(_apiSecret))
+            {
+                try
+                {
+                    var binanceClient = new BinanceClient(_apiKey, _apiSecret);
+                    var allSymbols = await binanceClient.GetAllSymbols();
+                    // Exclude already selected coins from available list
+                    availableCoins = allSymbols.Where(s => !selectedCoins.Contains(s)).ToList();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Failed to fetch symbols: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+
+            var dialog = new TraderSettingDialog(MenuItem, availableCoins, selectedCoins);
             dialog.ScanInterval.Text = ScanInterval.ToString();
             if (dialog.ShowDialog() == true)
             {
                 try
                 {
                     ScanInterval = int.Parse(dialog.ScanInterval.Text.Trim());
+                    var newSelectedCoins = dialog.GetSelectedCoins();
+                    SaveTraderSetting(ScanInterval, newSelectedCoins);
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show($"Failed to set trader: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
+        }
+
+        private void SaveTraderSetting(int scanInterval, List<string> selectedCoins)
+        {
+            var setting = new TraderSetting
+            {
+                ScanInterval = scanInterval,
+                SelectedCoins = selectedCoins
+            };
+            var json = JsonSerializer.Serialize(setting, CommonConstants.CachedJsonSerializerOptions);
+            File.WriteAllText(SettingConstants.TRADER_SETTING_FILE_NAME, json);
         }
 
         private void ImportWallet(object parameter)

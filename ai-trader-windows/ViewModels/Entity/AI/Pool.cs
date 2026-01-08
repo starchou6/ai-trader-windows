@@ -7,10 +7,24 @@ namespace AITrade.Entity.AI
     public static class Pool
     {
         private static string _api = "";
+        private static List<string> _selectedCoins = new List<string>();
+
         public static void SetCoinPoolAPI(string url) => _api = url;
+        public static void SetSelectedCoins(List<string> coins) => _selectedCoins = coins ?? new List<string>();
 
         public static async Task<MergedPool> GetMergedCoinPoolAsync(int limit)
         {
+            // 如果设置了自定义币种列表，直接使用
+            if (_selectedCoins.Count > 0)
+            {
+                return new MergedPool
+                {
+                    AllSymbols = _selectedCoins,
+                    SymbolSources = _selectedCoins.ToDictionary(s => s, s => new List<string> { "user_selected" })
+                };
+            }
+
+            // 否则使用默认的 API 获取
             if (string.IsNullOrWhiteSpace(_api))
                 throw new InvalidOperationException("Coin pool API URL is not set.");
 

@@ -26,6 +26,13 @@ namespace AITrade.ViewModels.Entity
             set { _btnSetApiInfo = value; OnPropertyChanged(); }
         }
 
+        private string _btnSetAITrader;
+        public string BtnSetAITrader
+        {
+            get => _btnSetAITrader;
+            set { _btnSetAITrader = value; OnPropertyChanged(); }
+        }
+
         private string _lblBinanceApiStatus;
         public string LblBinanceApiStatus
         {
@@ -283,6 +290,27 @@ namespace AITrade.ViewModels.Entity
         {
             get => _btnImport;
             set { _btnImport = value; OnPropertyChanged(); }
+        }
+
+        private string _traderSettingTitle;
+        public string TraderSettingTitle
+        {
+            get => _traderSettingTitle;
+            set { _traderSettingTitle = value; OnPropertyChanged(); }
+        }
+
+        private string _lblSelectedCoins;
+        public string LblSelectedCoins
+        {
+            get => _lblSelectedCoins;
+            set { _lblSelectedCoins = value; OnPropertyChanged(); }
+        }
+
+        private string _lblAvailableCoins;
+        public string LblAvailableCoins
+        {
+            get => _lblAvailableCoins;
+            set { _lblAvailableCoins = value; OnPropertyChanged(); }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

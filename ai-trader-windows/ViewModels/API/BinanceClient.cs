@@ -44,6 +44,22 @@ namespace AITrade.API
             return accountInfoResult.Data;
         }
 
+        public async Task<List<string>> GetAllSymbols()
+        {
+            var restClient = new BinanceRestClient(options =>
+            {
+                options.UsdFuturesOptions.ApiCredentials = _apiCredentials;
+            });
+            var exchangeInfoResult = await restClient.UsdFuturesApi.ExchangeData.GetExchangeInfoAsync();
+            if (!exchangeInfoResult.Success)
+                return [];
+            return exchangeInfoResult.Data.Symbols
+                .Where(s => s.Status == Binance.Net.Enums.SymbolStatus.Trading && s.Name.EndsWith("USDT"))
+                .Select(s => s.Name)
+                .OrderBy(s => s)
+                .ToList();
+        }
+
         public async Task<BinancePositionDetailsUsdt[]> GetPositions()
         {
             var restClient = new BinanceRestClient(options =>

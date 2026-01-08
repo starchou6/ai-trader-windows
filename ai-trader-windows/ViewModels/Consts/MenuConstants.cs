@@ -11,6 +11,7 @@ namespace AITrade.ViewModels.Consts
             HomeView = "HomeView",
             MainTitle = "AITrade",
             BtnSetApiInfo = "Set Api Info",
+            BtnSetAITrader = "Set AI Trader",
             LblBinanceApiStatus = "Binance Api Info Status : ",
             LblDeepSeekApiStatus = "DeepSeek Api Key Status : ",
             LblPeriod = "AI Trade Period : ",
@@ -47,7 +48,10 @@ namespace AITrade.ViewModels.Consts
             ApiImportBinanceSecret = "Enter your Binance api secret:",
             ApiImportDeepSeekKey = "Enter your DeepSeek api key:",
             BtnCancel = "Cancel",
-            BtnImport = "Import"
+            BtnImport = "Import",
+            TraderSettingTitle = "AI Trader Settings",
+            LblSelectedCoins = "Selected Coins",
+            LblAvailableCoins = "Available Coins"
         };
         #endregion
 
@@ -57,6 +61,7 @@ namespace AITrade.ViewModels.Consts
             HomeView = "HomeView",
             MainTitle = "AITrade",
             BtnSetApiInfo = "设置接口信息",
+            BtnSetAITrader = "设置AI交易",
             LblBinanceApiStatus = "币安接口状态：",
             LblDeepSeekApiStatus = "DeepSeek密钥状态：",
             LblPeriod = "AI交易周期：",
@@ -93,7 +98,10 @@ namespace AITrade.ViewModels.Consts
             ApiImportBinanceSecret = "输入你的币安API Secret：",
             ApiImportDeepSeekKey = "输入你的DeepSeek API Key：",
             BtnCancel = "取消",
-            BtnImport = "导入"
+            BtnImport = "导入",
+            TraderSettingTitle = "AI交易设置",
+            LblSelectedCoins = "已选币种",
+            LblAvailableCoins = "可用币种"
         };
         #endregion
 

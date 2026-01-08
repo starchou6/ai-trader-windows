@@ -1,4 +1,7 @@
-﻿using System.Windows;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Windows;
+using AITrade.ViewModels.Entity;
 
 namespace AITrader.Views
 {
@@ -7,9 +10,26 @@ namespace AITrader.Views
     /// </summary>
     public partial class TraderSettingDialog : Window
     {
-        public TraderSettingDialog()
+        public MenuTextData MenuItem { get; set; }
+
+        public TraderSettingDialog(MenuTextData menuItem, List<string> availableCoins, List<string> selectedCoins)
         {
             InitializeComponent();
+            MenuItem = menuItem;
+            DataContext = this;
+            LoadCoins(availableCoins, selectedCoins);
+        }
+
+        private void LoadCoins(List<string> availableCoins, List<string> selectedCoins)
+        {
+            foreach (var coin in availableCoins)
+            {
+                AvailableCoinsListBox.Items.Add(coin);
+            }
+            foreach (var coin in selectedCoins)
+            {
+                SelectedCoinsListBox.Items.Add(coin);
+            }
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
@@ -34,6 +54,49 @@ namespace AITrader.Views
 
             DialogResult = true;
             Close();
+        }
+
+        private void AddCoin_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedItems = AvailableCoinsListBox.SelectedItems.Cast<object>().ToList();
+            foreach (var item in selectedItems)
+            {
+                AvailableCoinsListBox.Items.Remove(item);
+                SelectedCoinsListBox.Items.Add(item);
+            }
+            UpdateButtonStates();
+        }
+
+        private void RemoveCoin_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedItems = SelectedCoinsListBox.SelectedItems.Cast<object>().ToList();
+            foreach (var item in selectedItems)
+            {
+                SelectedCoinsListBox.Items.Remove(item);
+                AvailableCoinsListBox.Items.Add(item);
+            }
+            UpdateButtonStates();
+        }
+
+        private void AvailableCoinsListBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            AddButton.IsEnabled = AvailableCoinsListBox.SelectedItems.Count > 0;
+        }
+
+        private void SelectedCoinsListBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            RemoveButton.IsEnabled = SelectedCoinsListBox.SelectedItems.Count > 0;
+        }
+
+        private void UpdateButtonStates()
+        {
+            AddButton.IsEnabled = AvailableCoinsListBox.SelectedItems.Count > 0;
+            RemoveButton.IsEnabled = SelectedCoinsListBox.SelectedItems.Count > 0;
+        }
+
+        public List<string> GetSelectedCoins()
+        {
+            return SelectedCoinsListBox.Items.Cast<string>().ToList();
         }
     }
 }

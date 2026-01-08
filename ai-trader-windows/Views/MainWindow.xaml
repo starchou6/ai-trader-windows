@@ -36,7 +36,7 @@
                 <Rectangle Width="16" Height="16" Fill="{Binding IsAiKeyEffective, Converter={StaticResource BoolToBrushConverter}}"/>
             </StackPanel>
             <ComboBox Grid.Column="1" ItemsSource="{Binding AvailableLanguages}" SelectedItem="{Binding SelectedLanguage}" Height="22" Width="120" HorizontalAlignment="Right" Margin="8,0,0,0"/>
-            <Button Grid.Column="2" Content="{Binding MenuItem.BtnSetApiInfo}" Margin="8,0,0,0" Command="{Binding SetTraderCommand}" Height="22" IsEnabled="{Binding IsNotRunning}"/>
+            <Button Grid.Column="2" Content="{Binding MenuItem.BtnSetAITrader}" Margin="8,0,0,0" Command="{Binding SetTraderCommand}" Height="22" IsEnabled="{Binding IsNotRunning}"/>
         </Grid>
         <StackPanel Orientation="Horizontal" Grid.Row="1">
             <Label Content="{Binding MenuItem.LblBalance}" />
