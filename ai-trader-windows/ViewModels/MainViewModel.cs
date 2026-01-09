@@ -311,8 +311,9 @@ namespace AITrade
             _ = Task.Run(RunTradeLoopAsync);
             _ = Task.Run(GetLogAsync);
 
-            // 从设置文件读取选中的交易币种
+            // 从设置文件读取选中的交易币种和自定义提示词
             var selectedCoins = new List<string>();
+            var customPrompt = string.Empty;
             if (File.Exists(SettingConstants.TRADER_SETTING_FILE_NAME))
             {
                 var json = File.ReadAllText(SettingConstants.TRADER_SETTING_FILE_NAME);
@@ -320,6 +321,10 @@ namespace AITrade
                 if (setting?.SelectedCoins != null)
                 {
                     selectedCoins = setting.SelectedCoins;
+                }
+                if (!string.IsNullOrWhiteSpace(setting?.CustomPrompt))
+                {
+                    customPrompt = setting.CustomPrompt;
                 }
             }
 
@@ -338,6 +343,7 @@ namespace AITrade
                 AltcoinLeverage = 10,
                 LogDirectory = _logDir,
                 SelectedCoins = selectedCoins,
+                CustomPrompt = customPrompt,
             };
             _autoTrader = AutoTrader.Create(cfg);
             _ = Task.Run(() => _autoTrader.Run());
@@ -354,8 +360,9 @@ namespace AITrade
         {
             var availableCoins = new List<string>();
             var selectedCoins = new List<string>();
+            var customPrompt = string.Empty;
 
-            // Load saved selected coins
+            // Load saved settings
             if (File.Exists(SettingConstants.TRADER_SETTING_FILE_NAME))
             {
                 var json = File.ReadAllText(SettingConstants.TRADER_SETTING_FILE_NAME);
@@ -363,6 +370,10 @@ namespace AITrade
                 if (setting?.SelectedCoins != null)
                 {
                     selectedCoins = setting.SelectedCoins;
+                }
+                if (!string.IsNullOrWhiteSpace(setting?.CustomPrompt))
+                {
+                    customPrompt = setting.CustomPrompt;
                 }
             }
 
@@ -381,7 +392,7 @@ namespace AITrade
                 }
             }
 
-            var dialog = new TraderSettingDialog(MenuItem, availableCoins, selectedCoins);
+            var dialog = new TraderSettingDialog(MenuItem, availableCoins, selectedCoins, customPrompt);
             dialog.ScanInterval.Text = ScanInterval.ToString();
             if (dialog.ShowDialog() == true)
             {
@@ -389,7 +400,8 @@ namespace AITrade
                 {
                     ScanInterval = int.Parse(dialog.ScanInterval.Text.Trim());
                     var newSelectedCoins = dialog.GetSelectedCoins();
-                    SaveTraderSetting(ScanInterval, newSelectedCoins);
+                    var newCustomPrompt = dialog.GetCustomPrompt();
+                    SaveTraderSetting(ScanInterval, newSelectedCoins, newCustomPrompt);
                 }
                 catch (Exception ex)
                 {
@@ -398,12 +410,13 @@ namespace AITrade
             }
         }
 
-        private void SaveTraderSetting(int scanInterval, List<string> selectedCoins)
+        private void SaveTraderSetting(int scanInterval, List<string> selectedCoins, string customPrompt)
         {
             var setting = new TraderSetting
             {
                 ScanInterval = scanInterval,
-                SelectedCoins = selectedCoins
+                SelectedCoins = selectedCoins,
+                CustomPrompt = customPrompt
             };
             var json = JsonSerializer.Serialize(setting, CommonConstants.CachedJsonSerializerOptions);
             File.WriteAllText(SettingConstants.TRADER_SETTING_FILE_NAME, json);

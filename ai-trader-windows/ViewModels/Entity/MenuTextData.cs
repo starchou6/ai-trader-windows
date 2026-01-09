@@ -313,6 +313,20 @@ namespace AITrade.ViewModels.Entity
             set { _lblAvailableCoins = value; OnPropertyChanged(); }
         }
 
+        private string _lblSystemPrompt;
+        public string LblSystemPrompt
+        {
+            get => _lblSystemPrompt;
+            set { _lblSystemPrompt = value; OnPropertyChanged(); }
+        }
+
+        private string _btnResetPrompt;
+        public string BtnResetPrompt
+        {
+            get => _btnResetPrompt;
+            set { _btnResetPrompt = value; OnPropertyChanged(); }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {

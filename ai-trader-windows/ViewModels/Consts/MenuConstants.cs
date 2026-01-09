@@ -51,7 +51,9 @@ namespace AITrade.ViewModels.Consts
             BtnImport = "Import",
             TraderSettingTitle = "AI Trader Settings",
             LblSelectedCoins = "Selected Coins",
-            LblAvailableCoins = "Available Coins"
+            LblAvailableCoins = "Available Coins",
+            LblSystemPrompt = "System Prompt (Editable):",
+            BtnResetPrompt = "Reset to Default"
         };
         #endregion
 
@@ -101,7 +103,9 @@ namespace AITrade.ViewModels.Consts
             BtnImport = "导入",
             TraderSettingTitle = "AI交易设置",
             LblSelectedCoins = "已选币种",
-            LblAvailableCoins = "可用币种"
+            LblAvailableCoins = "可用币种",
+            LblSystemPrompt = "系统提示词（可编辑）：",
+            BtnResetPrompt = "重置为默认"
         };
         #endregion
 

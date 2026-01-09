@@ -52,6 +52,9 @@ namespace AITrade.Services
         // 交易币种配置
         public List<string> SelectedCoins { get; set; } = new List<string>();
 
+        // 自定义提示词
+        public string CustomPrompt { get; set; } = string.Empty;
+
         // 账户配置
         public double InitialBalance { get; set; } = 1000;
 
@@ -300,7 +303,7 @@ namespace AITrade.Services
             FullDecision? ai = null;
             try
             {
-                ai = await DecisionService.GetFullDecision(ctx, _mcpClient);
+                ai = await DecisionService.GetFullDecision(ctx, _mcpClient, Config.CustomPrompt);
                 if (ai != null)
                 {
                     record.InputPrompt = ai.UserPrompt;

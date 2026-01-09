@@ -6,5 +6,6 @@ namespace AITrade.Entity
     {
         public int ScanInterval { get; set; }
         public List<string> SelectedCoins { get; set; } = new List<string>();
+        public string CustomPrompt { get; set; } = string.Empty;
     }
 }

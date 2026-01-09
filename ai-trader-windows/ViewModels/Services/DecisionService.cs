@@ -7,13 +7,13 @@ namespace AITrade.Services
 {
     public class DecisionService
     {
-        public static async Task<FullDecision> GetFullDecision(ContextData ctx, AIClient mcpClient)
+        public static async Task<FullDecision> GetFullDecision(ContextData ctx, AIClient mcpClient, string customPrompt = null)
         {
             // 1) market + OI
             await ctx.FetchMarketDataForContextAsync();
 
             // 2) prompts
-            var systemPrompt = PromptUtil.GetSystemPrompt();
+            var systemPrompt = PromptUtil.GetSystemPrompt(customPrompt);
             var userPrompt = PromptUtil.GetUserPrompt(ctx);
 
             // 3) call AI

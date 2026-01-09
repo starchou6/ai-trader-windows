@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using AITrade.Utils;
 using AITrade.ViewModels.Entity;
 
 namespace AITrader.Views
@@ -12,12 +13,20 @@ namespace AITrader.Views
     {
         public MenuTextData MenuItem { get; set; }
 
-        public TraderSettingDialog(MenuTextData menuItem, List<string> availableCoins, List<string> selectedCoins)
+        public TraderSettingDialog(MenuTextData menuItem, List<string> availableCoins, List<string> selectedCoins, string customPrompt)
         {
             InitializeComponent();
             MenuItem = menuItem;
             DataContext = this;
             LoadCoins(availableCoins, selectedCoins);
+            LoadCustomPrompt(customPrompt);
+        }
+
+        private void LoadCustomPrompt(string customPrompt)
+        {
+            CustomPromptTextBox.Text = string.IsNullOrWhiteSpace(customPrompt)
+                ? PromptUtil.DefaultCustomPrompt
+                : customPrompt;
         }
 
         private void LoadCoins(List<string> availableCoins, List<string> selectedCoins)
@@ -97,6 +106,16 @@ namespace AITrader.Views
         public List<string> GetSelectedCoins()
         {
             return SelectedCoinsListBox.Items.Cast<string>().ToList();
+        }
+
+        public string GetCustomPrompt()
+        {
+            return CustomPromptTextBox.Text.Trim();
+        }
+
+        private void ResetPromptButton_Click(object sender, RoutedEventArgs e)
+        {
+            CustomPromptTextBox.Text = PromptUtil.DefaultCustomPrompt;
         }
     }
 }
