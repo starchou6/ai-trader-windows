@@ -1,4 +1,4 @@
-# AI 交易软件
+# ai-trader-windows
 
 [English](readme.md)
 
