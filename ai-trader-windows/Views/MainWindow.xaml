@@ -94,42 +94,39 @@
                     </DataGrid>
                 </TabItem>
                 <TabItem Header="{Binding MenuItem.TabTradeLogs}">
-                    <StackPanel>
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,8,0,0">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,8,0,8">
                             <Button Content="上一页" Command="{Binding PrevPageCommand}" IsEnabled="{Binding CanPrevPage}" Margin="4"/>
-                            <TextBlock Text="{Binding CurrentPage}" Margin="4"/>
-                            <TextBlock Text="/" Margin="2,0"/>
-                            <TextBlock Text="{Binding TotalPageCount}" Margin="4"/>
+                            <TextBlock Text="{Binding CurrentPage}" VerticalAlignment="Center" Margin="4"/>
+                            <TextBlock Text="/" VerticalAlignment="Center" Margin="2,0"/>
+                            <TextBlock Text="{Binding TotalPageCount}" VerticalAlignment="Center" Margin="4"/>
                             <Button Content="下一页" Command="{Binding NextPageCommand}" IsEnabled="{Binding CanNextPage}" Margin="4"/>
                         </StackPanel>
-                        <ItemsControl ItemsSource="{Binding AiTradeLogs}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Expander Header="{Binding Title}">
-                                        <Grid Margin="0 8 0 0">
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="*"/>
-                                            </Grid.RowDefinitions>
-                                            <StackPanel Orientation="Horizontal"  Grid.Row="0" Margin="0 8 0 0">
-                                                <Label Content="{Binding DataContext.MenuItem.LblDecisions, RelativeSource={RelativeSource AncestorType=Window}}" />
-                                                <DataGrid ItemsSource="{Binding Decisions}" AutoGenerateColumns="True" CanUserAddRows="False" />
-                                            </StackPanel>
-                                            <StackPanel Orientation="Horizontal"  Grid.Row="1" Margin="0 8 0 0">
-                                                <Label Content="{Binding DataContext.MenuItem.LblCoTTrace, RelativeSource={RelativeSource AncestorType=Window}}" />
-                                                <TextBlock Text="{Binding CoTTrace}" TextWrapping="Wrap" Width="650"/>
-                                            </StackPanel>
-                                            <StackPanel Orientation="Horizontal" Grid.Row="2" Margin="0 8 0 0">
-                                                <Label Content="{Binding DataContext.MenuItem.LblInputPrompt, RelativeSource={RelativeSource AncestorType=Window}}" />
-                                                <Button Content="{Binding DataContext.MenuItem.BtnShow, RelativeSource={RelativeSource AncestorType=Window}}" Padding="8,2" Height="22" Click="ShowInputPrompt_Click" Tag="{Binding InputPrompt}" />
-                                            </StackPanel>
-                                        </Grid>
-                                    </Expander>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </StackPanel>
+                        <DataGrid Grid.Row="1" ItemsSource="{Binding AiTradeLogs}" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn x:Name="colLogTime" Binding="{Binding RecordTime}" Width="160"/>
+                                <DataGridTextColumn x:Name="colLogCycle" Binding="{Binding CycleNumber}" Width="60"/>
+                                <DataGridTextColumn x:Name="colLogRuntime" Binding="{Binding RuntimeMinutes}" Width="100"/>
+                                <DataGridTextColumn x:Name="colLogOpenLong" Binding="{Binding OpenLongCount}" Width="70"/>
+                                <DataGridTextColumn x:Name="colLogOpenShort" Binding="{Binding OpenShortCount}" Width="70"/>
+                                <DataGridTextColumn x:Name="colLogWait" Binding="{Binding WaitCount}" Width="80"/>
+                                <DataGridTemplateColumn x:Name="colLogAction" Width="Auto">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="{Binding DataContext.MenuItem.BtnViewDetail, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                    Padding="8,2" Height="22"
+                                                    Click="ViewTradeLogDetail_Click"
+                                                    Tag="{Binding}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
                 </TabItem>
             </TabControl>
         </ScrollViewer>

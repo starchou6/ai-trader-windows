@@ -1,4 +1,6 @@
-﻿namespace AITrade.Entity.AI
+﻿using System.Text.RegularExpressions;
+
+namespace AITrade.Entity.AI
 {
     public class DecisionRecord
     {
@@ -14,6 +16,40 @@
         public List<PositionSnapshot> Positions { get; set; } = new();
         public List<string> CandidateCoins { get; set; } = new();
         public List<DecisionAction> Decisions { get; set; } = new();
+
+        // Computed properties for DataGrid display
+        public string RecordTime
+        {
+            get
+            {
+                var match = Regex.Match(Title, @"\*\*时间\*\*:\s*([^\|]+)");
+                return match.Success ? match.Groups[1].Value.Trim() : "";
+            }
+        }
+
+        public string CycleNumber
+        {
+            get
+            {
+                var match = Regex.Match(Title, @"\*\*周期\*\*:\s*#(\d+)");
+                return match.Success ? match.Groups[1].Value : "";
+            }
+        }
+
+        public string RuntimeMinutes
+        {
+            get
+            {
+                var match = Regex.Match(Title, @"\*\*运行\*\*:\s*(\d+)分钟");
+                return match.Success ? match.Groups[1].Value : "";
+            }
+        }
+
+        public int OpenLongCount => Decisions?.Count(d => d.Action == "open_long") ?? 0;
+        public int OpenShortCount => Decisions?.Count(d => d.Action == "open_short") ?? 0;
+        public int CloseLongCount => Decisions?.Count(d => d.Action == "close_long") ?? 0;
+        public int CloseShortCount => Decisions?.Count(d => d.Action == "close_short") ?? 0;
+        public int WaitCount => Decisions?.Count(d => d.Action == "wait" || d.Action == "hold") ?? 0;
     }
 
     public class AccountSnapshot

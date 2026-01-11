@@ -327,6 +327,69 @@ namespace AITrade.ViewModels.Entity
             set { _btnResetPrompt = value; OnPropertyChanged(); }
         }
 
+        private string _tradeLogDetailTitle;
+        public string TradeLogDetailTitle
+        {
+            get => _tradeLogDetailTitle;
+            set { _tradeLogDetailTitle = value; OnPropertyChanged(); }
+        }
+
+        private string _btnShowInputPrompt;
+        public string BtnShowInputPrompt
+        {
+            get => _btnShowInputPrompt;
+            set { _btnShowInputPrompt = value; OnPropertyChanged(); }
+        }
+
+        private string _btnViewDetail;
+        public string BtnViewDetail
+        {
+            get => _btnViewDetail;
+            set { _btnViewDetail = value; OnPropertyChanged(); }
+        }
+
+        private string _gridTime;
+        public string GridTime
+        {
+            get => _gridTime;
+            set { _gridTime = value; OnPropertyChanged(); }
+        }
+
+        private string _gridCycle;
+        public string GridCycle
+        {
+            get => _gridCycle;
+            set { _gridCycle = value; OnPropertyChanged(); }
+        }
+
+        private string _gridRuntime;
+        public string GridRuntime
+        {
+            get => _gridRuntime;
+            set { _gridRuntime = value; OnPropertyChanged(); }
+        }
+
+        private string _gridOpenLong;
+        public string GridOpenLong
+        {
+            get => _gridOpenLong;
+            set { _gridOpenLong = value; OnPropertyChanged(); }
+        }
+
+        private string _gridOpenShort;
+        public string GridOpenShort
+        {
+            get => _gridOpenShort;
+            set { _gridOpenShort = value; OnPropertyChanged(); }
+        }
+
+        private string _gridWait;
+        public string GridWait
+        {
+            get => _gridWait;
+            set { _gridWait = value; OnPropertyChanged(); }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {

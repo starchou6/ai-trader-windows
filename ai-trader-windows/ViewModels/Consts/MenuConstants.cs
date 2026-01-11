@@ -39,9 +39,9 @@ namespace AITrade.ViewModels.Consts
             GridCompletedPrice = "Completed Price",
             GridRealizedProfit = "Realized Profit",
             GridTimestamp = "Timestamp",
-            LblCoTTrace = "CoTTrace:",
+            LblCoTTrace = "AI Response",
             LblDecisions = "Decisions:",
-            LblInputPrompt = "InputPrompt:",
+            LblInputPrompt = "InputPrompt",
             BtnShow = "Show",
             ApiImportTitle = "Import Api Info",
             ApiImportBinanceKey = "Enter your Binance api key:",
@@ -53,7 +53,16 @@ namespace AITrade.ViewModels.Consts
             LblSelectedCoins = "Selected Coins",
             LblAvailableCoins = "Available Coins",
             LblSystemPrompt = "System Prompt (Editable):",
-            BtnResetPrompt = "Reset to Default"
+            BtnResetPrompt = "Reset to Default",
+            TradeLogDetailTitle = "Trade Log Detail",
+            BtnShowInputPrompt = "Show Input Prompt",
+            BtnViewDetail = "View Detail",
+            GridTime = "Time",
+            GridCycle = "Cycle",
+            GridRuntime = "Runtime (min)",
+            GridOpenLong = "Open Long",
+            GridOpenShort = "Open Short",
+            GridWait = "Wait/Hold"
         };
         #endregion
 
@@ -91,9 +100,9 @@ namespace AITrade.ViewModels.Consts
             GridCompletedPrice = "成交价",
             GridRealizedProfit = "已实现盈亏",
             GridTimestamp = "时间戳",
-            LblCoTTrace = "CoT追踪：",
+            LblCoTTrace = "AI回复",
             LblDecisions = "决策：",
-            LblInputPrompt = "输入提示：",
+            LblInputPrompt = "输入提示词",
             BtnShow = "显示",
             ApiImportTitle = "导入接口信息",
             ApiImportBinanceKey = "输入你的币安API Key：",
@@ -105,7 +114,16 @@ namespace AITrade.ViewModels.Consts
             LblSelectedCoins = "已选币种",
             LblAvailableCoins = "可用币种",
             LblSystemPrompt = "系统提示词（可编辑）：",
-            BtnResetPrompt = "重置为默认"
+            BtnResetPrompt = "重置为默认",
+            TradeLogDetailTitle = "交易日志详情",
+            BtnShowInputPrompt = "显示输入提示",
+            BtnViewDetail = "查看详情",
+            GridTime = "时间",
+            GridCycle = "周期",
+            GridRuntime = "运行时间(分)",
+            GridOpenLong = "开多",
+            GridOpenShort = "开空",
+            GridWait = "等待/持有"
         };
         #endregion
 

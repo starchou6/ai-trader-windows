@@ -1,5 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using AITrade.Entity.AI;
+using AITrader.Views;
 
 namespace AITrade
 {
@@ -30,6 +32,20 @@ namespace AITrade
                 dlg.ShowDialog();
             }
         }
+
+        private void ViewTradeLogDetail_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.Tag is DecisionRecord record)
+            {
+                var vm = DataContext as MainViewModel;
+                if (vm?.MenuItem != null)
+                {
+                    var dlg = new TradeLogDetailDialog(vm.MenuItem, record);
+                    dlg.Owner = this;
+                    dlg.ShowDialog();
+                }
+            }
+        }
         private void RefreshDataGridHeaders()
         {
             var menu = (DataContext as MainViewModel)?.MenuItem;
@@ -54,6 +70,15 @@ namespace AITrade
                 colCompletedPrice.Header = menu.GridCompletedPrice;
                 colCompletedRealizedProfit.Header = menu.GridRealizedProfit;
                 colCompletedTimestamp.Header = menu.GridTimestamp;
+
+                // TradeLogs DataGrid
+                colLogTime.Header = menu.GridTime;
+                colLogCycle.Header = menu.GridCycle;
+                colLogRuntime.Header = menu.GridRuntime;
+                colLogOpenLong.Header = menu.GridOpenLong;
+                colLogOpenShort.Header = menu.GridOpenShort;
+                colLogWait.Header = menu.GridWait;
+                colLogAction.Header = menu.GridAction;
             }
         }
     }
