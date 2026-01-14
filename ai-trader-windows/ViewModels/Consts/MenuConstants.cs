@@ -62,7 +62,12 @@ namespace AITrade.ViewModels.Consts
             GridRuntime = "Runtime (min)",
             GridOpenLong = "Open Long",
             GridOpenShort = "Open Short",
-            GridWait = "Wait/Hold"
+            GridWait = "Wait/Hold",
+            LblStrategySelect = "Strategy:",
+            LblStrategyName = "Strategy Name:",
+            BtnSaveStrategy = "Save Strategy",
+            BtnDeleteStrategy = "Delete",
+            LblNewStrategy = "-- New Strategy --"
         };
         #endregion
 
@@ -123,7 +128,12 @@ namespace AITrade.ViewModels.Consts
             GridRuntime = "运行时间(分)",
             GridOpenLong = "开多",
             GridOpenShort = "开空",
-            GridWait = "等待/持有"
+            GridWait = "等待/持有",
+            LblStrategySelect = "策略：",
+            LblStrategyName = "策略名称：",
+            BtnSaveStrategy = "保存策略",
+            BtnDeleteStrategy = "删除",
+            LblNewStrategy = "-- 新建策略 --"
         };
         #endregion
 

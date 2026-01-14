@@ -390,6 +390,41 @@ namespace AITrade.ViewModels.Entity
             set { _gridWait = value; OnPropertyChanged(); }
         }
 
+        private string _lblStrategySelect;
+        public string LblStrategySelect
+        {
+            get => _lblStrategySelect;
+            set { _lblStrategySelect = value; OnPropertyChanged(); }
+        }
+
+        private string _lblStrategyName;
+        public string LblStrategyName
+        {
+            get => _lblStrategyName;
+            set { _lblStrategyName = value; OnPropertyChanged(); }
+        }
+
+        private string _btnSaveStrategy;
+        public string BtnSaveStrategy
+        {
+            get => _btnSaveStrategy;
+            set { _btnSaveStrategy = value; OnPropertyChanged(); }
+        }
+
+        private string _btnDeleteStrategy;
+        public string BtnDeleteStrategy
+        {
+            get => _btnDeleteStrategy;
+            set { _btnDeleteStrategy = value; OnPropertyChanged(); }
+        }
+
+        private string _lblNewStrategy;
+        public string LblNewStrategy
+        {
+            get => _lblNewStrategy;
+            set { _lblNewStrategy = value; OnPropertyChanged(); }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {

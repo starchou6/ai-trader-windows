@@ -3,6 +3,15 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="{Binding MenuItem.TraderSettingTitle}" Height="650" Width="800">
     <StackPanel Margin="10">
+        <!-- Strategy Selection Area -->
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+            <Label Content="{Binding MenuItem.LblStrategySelect}" VerticalAlignment="Center"/>
+            <ComboBox x:Name="StrategyComboBox" Width="180" VerticalAlignment="Center" SelectionChanged="StrategyComboBox_SelectionChanged"/>
+            <Label Content="{Binding MenuItem.LblStrategyName}" VerticalAlignment="Center" Margin="15,0,0,0"/>
+            <TextBox x:Name="StrategyNameTextBox" Width="120" VerticalAlignment="Center"/>
+            <Button x:Name="SaveStrategyButton" Content="{Binding MenuItem.BtnSaveStrategy}" Margin="10,0,0,0" Padding="8,2" Click="SaveStrategy_Click"/>
+            <Button x:Name="DeleteStrategyButton" Content="{Binding MenuItem.BtnDeleteStrategy}" Margin="10,0,0,0" Padding="8,2" Click="DeleteStrategy_Click"/>
+        </StackPanel>
         <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
             <Label Margin="4,0,0,0" Content="{Binding MenuItem.LblPeriod}" />
             <TextBox Name="ScanInterval" Width="30" VerticalAlignment="Center"/>

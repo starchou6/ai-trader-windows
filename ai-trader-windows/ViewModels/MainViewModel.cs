@@ -30,6 +30,7 @@ namespace AITrade
         private string _aiKey;
         private AutoTrader _autoTrader;
         private string _logDir;
+        private StrategyLibrary _strategyLibrary = new StrategyLibrary();
         #endregion
 
         #region 画面绑定属性
@@ -231,6 +232,7 @@ namespace AITrade
                     ScanInterval = setting.ScanInterval;
                 }
             }
+            LoadStrategyLibrary();
             AccountData.ApiStatus = false;
             _ = LoadInfoStateAsync();
             IsAiKeyEffective = false;
@@ -311,10 +313,20 @@ namespace AITrade
             _ = Task.Run(RunTradeLoopAsync);
             _ = Task.Run(GetLogAsync);
 
-            // 从设置文件读取选中的交易币种和自定义提示词
+            // 优先从活动策略读取配置，否则从设置文件读取
             var selectedCoins = new List<string>();
             var customPrompt = string.Empty;
-            if (File.Exists(SettingConstants.TRADER_SETTING_FILE_NAME))
+            if (!string.IsNullOrEmpty(_strategyLibrary.ActiveStrategyId))
+            {
+                var activeStrategy = _strategyLibrary.Strategies.FirstOrDefault(s => s.Id == _strategyLibrary.ActiveStrategyId);
+                if (activeStrategy != null)
+                {
+                    selectedCoins = activeStrategy.SelectedCoins ?? new List<string>();
+                    customPrompt = activeStrategy.CustomPrompt ?? string.Empty;
+                    ScanInterval = activeStrategy.ScanInterval;
+                }
+            }
+            else if (File.Exists(SettingConstants.TRADER_SETTING_FILE_NAME))
             {
                 var json = File.ReadAllText(SettingConstants.TRADER_SETTING_FILE_NAME);
                 var setting = JsonSerializer.Deserialize<TraderSetting>(json, CommonConstants.CachedJsonSerializerOptions);
@@ -362,9 +374,20 @@ namespace AITrade
             var selectedCoins = new List<string>();
             var customPrompt = string.Empty;
 
-            // Load saved settings
-            if (File.Exists(SettingConstants.TRADER_SETTING_FILE_NAME))
+            // Load from active strategy if exists
+            if (!string.IsNullOrEmpty(_strategyLibrary.ActiveStrategyId))
             {
+                var activeStrategy = _strategyLibrary.Strategies.FirstOrDefault(s => s.Id == _strategyLibrary.ActiveStrategyId);
+                if (activeStrategy != null)
+                {
+                    selectedCoins = activeStrategy.SelectedCoins ?? new List<string>();
+                    customPrompt = activeStrategy.CustomPrompt ?? string.Empty;
+                    ScanInterval = activeStrategy.ScanInterval;
+                }
+            }
+            else if (File.Exists(SettingConstants.TRADER_SETTING_FILE_NAME))
+            {
+                // Fallback to legacy settings
                 var json = File.ReadAllText(SettingConstants.TRADER_SETTING_FILE_NAME);
                 var setting = JsonSerializer.Deserialize<TraderSetting>(json, CommonConstants.CachedJsonSerializerOptions);
                 if (setting?.SelectedCoins != null)
@@ -392,7 +415,7 @@ namespace AITrade
                 }
             }
 
-            var dialog = new TraderSettingDialog(MenuItem, availableCoins, selectedCoins, customPrompt);
+            var dialog = new TraderSettingDialog(MenuItem, availableCoins, selectedCoins, customPrompt, _strategyLibrary);
             dialog.ScanInterval.Text = ScanInterval.ToString();
             if (dialog.ShowDialog() == true)
             {
@@ -401,6 +424,12 @@ namespace AITrade
                     ScanInterval = int.Parse(dialog.ScanInterval.Text.Trim());
                     var newSelectedCoins = dialog.GetSelectedCoins();
                     var newCustomPrompt = dialog.GetCustomPrompt();
+
+                    // Save strategy library
+                    _strategyLibrary = dialog.GetStrategyLibrary();
+                    SaveStrategyLibrary();
+
+                    // Also save to legacy settings for backward compatibility
                     SaveTraderSetting(ScanInterval, newSelectedCoins, newCustomPrompt);
                 }
                 catch (Exception ex)
@@ -420,6 +449,32 @@ namespace AITrade
             };
             var json = JsonSerializer.Serialize(setting, CommonConstants.CachedJsonSerializerOptions);
             File.WriteAllText(SettingConstants.TRADER_SETTING_FILE_NAME, json);
+        }
+
+        private void LoadStrategyLibrary()
+        {
+            if (File.Exists(SettingConstants.STRATEGY_LIBRARY_FILE_NAME))
+            {
+                try
+                {
+                    var json = File.ReadAllText(SettingConstants.STRATEGY_LIBRARY_FILE_NAME);
+                    var library = JsonSerializer.Deserialize<StrategyLibrary>(json, CommonConstants.CachedJsonSerializerOptions);
+                    if (library != null)
+                    {
+                        _strategyLibrary = library;
+                    }
+                }
+                catch
+                {
+                    _strategyLibrary = new StrategyLibrary();
+                }
+            }
+        }
+
+        private void SaveStrategyLibrary()
+        {
+            var json = JsonSerializer.Serialize(_strategyLibrary, CommonConstants.CachedJsonSerializerOptions);
+            File.WriteAllText(SettingConstants.STRATEGY_LIBRARY_FILE_NAME, json);
         }
 
         private void ImportWallet(object parameter)
