@@ -1,13 +1,14 @@
-﻿using AITrade.API;
+using AITrade.API;
 using AITrade.Consts;
 using AITrade.Converter;
 using AITrade.Entity;
 using AITrade.Entity.AI;
 using AITrade.Services;
+using AITrade.ViewModels;
 using AITrade.ViewModels.Consts;
 using AITrade.ViewModels.Entity;
+using AITrade.ViewModels.Services;
 using AITrader.ViewModels.Consts;
-using AITrader.Views;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
@@ -19,11 +20,8 @@ using System.Windows.Input;
 
 namespace AITrade
 {
-    public class MainViewModel : INotifyPropertyChanged
+    public class MainViewModel : ViewModelBase
     {
-        #region Const
-        #endregion
-
         #region 私有属性
         private string _apiKey;
         private string _apiSecret;
@@ -31,6 +29,7 @@ namespace AITrade
         private AutoTrader _autoTrader;
         private string _logDir;
         private StrategyLibrary _strategyLibrary = new StrategyLibrary();
+        private readonly IDialogService _dialogService;
         #endregion
 
         #region 画面绑定属性
@@ -173,10 +172,17 @@ namespace AITrade
         public ICommand ClosePositionCommand { get; }
         public ICommand CloseAllPositionCommand { get; }
         public ICommand TestAiTraderCommand { get; }
+        public ICommand ViewTradeLogDetailCommand { get; }
         #endregion
 
-        public MainViewModel()
+        public MainViewModel() : this(new DialogService())
         {
+        }
+
+        public MainViewModel(IDialogService dialogService)
+        {
+            _dialogService = dialogService;
+
             SetTraderCommand = new RelayCommand(SetTrader);
             ImportWalletCommand = new RelayCommand(ImportWallet);
             StartCommand = new RelayCommand(Start);
@@ -189,6 +195,11 @@ namespace AITrade
             TestAiTraderCommand = new RelayCommand(TestAiTrader);
             NextPageCommand = new RelayCommand(_ => { if (CurrentPage < TotalPageCount - 1) CurrentPage++; });
             PrevPageCommand = new RelayCommand(_ => { if (CurrentPage > 0) CurrentPage--; });
+            ViewTradeLogDetailCommand = new RelayCommand(
+                execute: p => ViewTradeLogDetail((DecisionRecord)p!),
+                canExecute: p => p is DecisionRecord
+            );
+
             #region language setting
             if (File.Exists(SettingConstants.LANGUAGE_SETTING_FILE_NAME))
             {
@@ -265,7 +276,7 @@ namespace AITrade
             {
                 await App.Current.Dispatcher.InvokeAsync(() =>
                 {
-                    MessageBox.Show($"加载账户状态失败: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    _dialogService.ShowError($"加载账户状态失败: {ex.Message}");
                     AccountData.ApiStatus = false;
                 });
             }
@@ -293,7 +304,7 @@ namespace AITrade
             {
                 await App.Current.Dispatcher.InvokeAsync(() =>
                 {
-                    MessageBox.Show($"验证AI Key失败: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    _dialogService.ShowError($"验证AI Key失败: {ex.Message}");
                     IsAiKeyEffective = false;
                 });
             }
@@ -303,7 +314,7 @@ namespace AITrade
         {
             if (!(AccountData.ApiStatus && IsAiKeyEffective))
             {
-                MessageBox.Show("Please input your api info first. 请先输入api信息", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _dialogService.ShowError("Please input your api info first. 请先输入api信息");
                 return;
             }
             if (IsRunning) return;
@@ -411,22 +422,28 @@ namespace AITrade
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Failed to fetch symbols: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    _dialogService.ShowError($"Failed to fetch symbols: {ex.Message}");
                 }
             }
 
-            var dialog = new TraderSettingDialog(MenuItem, availableCoins, selectedCoins, customPrompt, _strategyLibrary);
-            dialog.ScanInterval.Text = ScanInterval.ToString();
-            if (dialog.ShowDialog() == true)
+            var result = _dialogService.ShowTraderSettingDialog(
+                MenuItem,
+                availableCoins,
+                selectedCoins,
+                customPrompt,
+                ScanInterval,
+                _strategyLibrary);
+
+            if (result.Success)
             {
                 try
                 {
-                    ScanInterval = int.Parse(dialog.ScanInterval.Text.Trim());
-                    var newSelectedCoins = dialog.GetSelectedCoins();
-                    var newCustomPrompt = dialog.GetCustomPrompt();
+                    ScanInterval = result.ScanInterval;
+                    var newSelectedCoins = result.SelectedCoins;
+                    var newCustomPrompt = result.CustomPrompt;
 
                     // Save strategy library
-                    _strategyLibrary = dialog.GetStrategyLibrary();
+                    _strategyLibrary = result.StrategyLibrary;
                     SaveStrategyLibrary();
 
                     // Also save to legacy settings for backward compatibility
@@ -434,7 +451,7 @@ namespace AITrade
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Failed to set trader: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    _dialogService.ShowError($"Failed to set trader: {ex.Message}");
                 }
             }
         }
@@ -479,25 +496,31 @@ namespace AITrade
 
         private void ImportWallet(object parameter)
         {
-            var dialog = new ApiImportDialog();
-            dialog.Key.Text = _apiKey;
-            dialog.Secret.Text = _apiSecret;
-            dialog.AiKey.Text = _aiKey;
-            if (dialog.ShowDialog() == true)
+            var result = _dialogService.ShowApiImportDialog(_apiKey, _apiSecret, _aiKey);
+            if (result.Success)
             {
                 try
                 {
-                    _apiKey = dialog.Key.Text.Trim();
-                    _apiSecret = dialog.Secret.Text.Trim();
-                    _aiKey = dialog.AiKey.Text.Trim();
+                    _apiKey = result.ApiKey;
+                    _apiSecret = result.ApiSecret;
+                    _aiKey = result.AiKey;
                     SaveApiInfo(_apiKey + " " + _apiSecret);
                     SaveAiKeyInfo(_aiKey);
                     _ = LoadInfoStateAsync();
+                    _ = ValidAiKeyAsync();
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Failed to import wallet: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    _dialogService.ShowError($"Failed to import wallet: {ex.Message}");
                 }
+            }
+        }
+
+        private void ViewTradeLogDetail(DecisionRecord record)
+        {
+            if (MenuItem != null && record != null)
+            {
+                _dialogService.ShowTradeLogDetailDialog(MenuItem, record);
             }
         }
 
@@ -532,8 +555,7 @@ namespace AITrade
 
                 await App.Current.Dispatcher.InvokeAsync(() =>
                 {
-                    MessageBox.Show($"RunTradeLoop failed:\n{detail}", "Trade Loop Error",
-                        MessageBoxButton.OK, MessageBoxImage.Error);
+                    _dialogService.ShowError($"RunTradeLoop failed:\n{detail}", "Trade Loop Error");
                 });
             }
         }
@@ -556,7 +578,7 @@ namespace AITrade
             {
                 await App.Current.Dispatcher.InvokeAsync(() =>
                 {
-                    MessageBox.Show($"Get log failed:\n", "GetLogAsync() Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    _dialogService.ShowError($"Get log failed: {ex.Message}", "GetLogAsync() Error");
                 });
             }
         }
@@ -628,7 +650,7 @@ namespace AITrade
             {
                 await App.Current.Dispatcher.InvokeAsync(() =>
                 {
-                    MessageBox.Show($"平仓失败: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    _dialogService.ShowError($"平仓失败: {ex.Message}");
                 });
             }
         }
@@ -661,12 +683,6 @@ namespace AITrade
             var aiTrader = AutoTrader.Create(cfg);
             await aiTrader.Run();
         }
-        #endregion
-
-        #region INotifyPropertyChanged
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
-            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         #endregion
     }
 }

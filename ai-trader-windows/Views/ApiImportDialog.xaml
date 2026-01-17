@@ -1,17 +1,21 @@
 <Window x:Class="AITrade.ApiImportDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:dialogs="clr-namespace:AITrade.ViewModels.Dialogs"
         Title="Import Api Info" Height="300" Width="400" WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
+    <Window.DataContext>
+        <dialogs:ApiImportDialogViewModel />
+    </Window.DataContext>
     <StackPanel Margin="10">
         <Label Content="Enter your Binance api key:" HorizontalAlignment="Left" VerticalAlignment="Top" />
-        <TextBox Name="Key" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
+        <TextBox Name="Key" Text="{Binding ApiKey, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
         <Label Content="Enter your Binance api secret:" HorizontalAlignment="Left" VerticalAlignment="Top" />
-        <TextBox Name="Secret" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
+        <TextBox Name="Secret" Text="{Binding ApiSecret, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
         <Label Content="Enter your DeepSeek api key:" HorizontalAlignment="Left" VerticalAlignment="Top" />
-        <TextBox Name="AiKey" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
+        <TextBox Name="AiKey" Text="{Binding AiKey, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
-            <Button Content="Cancel" Width="75" Margin="5" Click="CancelButton_Click" />
-            <Button Content="Import" Width="75" Margin="5" Click="ImportButton_Click" />
+            <Button Content="Cancel" Width="75" Margin="5" Command="{Binding CancelCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" />
+            <Button Content="Import" Width="75" Margin="5" Command="{Binding ImportCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" />
         </StackPanel>
     </StackPanel>
 </Window>

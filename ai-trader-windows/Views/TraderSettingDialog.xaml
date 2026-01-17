@@ -1,20 +1,31 @@
 <Window x:Class="AITrader.Views.TraderSettingDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:dialogs="clr-namespace:AITrade.ViewModels.Dialogs"
         Title="{Binding MenuItem.TraderSettingTitle}" Height="650" Width="800">
+    <Window.DataContext>
+        <dialogs:TraderSettingDialogViewModel />
+    </Window.DataContext>
     <StackPanel Margin="10">
         <!-- Strategy Selection Area -->
         <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
             <Label Content="{Binding MenuItem.LblStrategySelect}" VerticalAlignment="Center"/>
-            <ComboBox x:Name="StrategyComboBox" Width="180" VerticalAlignment="Center" SelectionChanged="StrategyComboBox_SelectionChanged"/>
+            <ComboBox x:Name="StrategyComboBox" Width="180" VerticalAlignment="Center"
+                      ItemsSource="{Binding Strategies}"
+                      SelectedItem="{Binding SelectedStrategyItem}"/>
             <Label Content="{Binding MenuItem.LblStrategyName}" VerticalAlignment="Center" Margin="15,0,0,0"/>
-            <TextBox x:Name="StrategyNameTextBox" Width="120" VerticalAlignment="Center"/>
-            <Button x:Name="SaveStrategyButton" Content="{Binding MenuItem.BtnSaveStrategy}" Margin="10,0,0,0" Padding="8,2" Click="SaveStrategy_Click"/>
-            <Button x:Name="DeleteStrategyButton" Content="{Binding MenuItem.BtnDeleteStrategy}" Margin="10,0,0,0" Padding="8,2" Click="DeleteStrategy_Click"/>
+            <TextBox x:Name="StrategyNameTextBox" Width="120" VerticalAlignment="Center"
+                     Text="{Binding StrategyName, UpdateSourceTrigger=PropertyChanged}"/>
+            <Button x:Name="SaveStrategyButton" Content="{Binding MenuItem.BtnSaveStrategy}" Margin="10,0,0,0" Padding="8,2"
+                    Command="{Binding SaveStrategyCommand}"/>
+            <Button x:Name="DeleteStrategyButton" Content="{Binding MenuItem.BtnDeleteStrategy}" Margin="10,0,0,0" Padding="8,2"
+                    Command="{Binding DeleteStrategyCommand}"
+                    IsEnabled="{Binding CanDeleteStrategy}"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
             <Label Margin="4,0,0,0" Content="{Binding MenuItem.LblPeriod}" />
-            <TextBox Name="ScanInterval" Width="30" VerticalAlignment="Center"/>
+            <TextBox x:Name="ScanInterval" Width="60" VerticalAlignment="Center"
+                     Text="{Binding ScanInterval, UpdateSourceTrigger=PropertyChanged}"/>
             <Label Margin="4,0,0,0" Content="{Binding MenuItem.LblPeriodUnit}" />
         </StackPanel>
         <Grid>
@@ -26,30 +37,44 @@
             <!-- 已选币种 -->
             <StackPanel Grid.Column="0">
                 <Label Content="{Binding MenuItem.LblSelectedCoins}" HorizontalAlignment="Center"/>
-                <ListBox x:Name="SelectedCoinsListBox" Height="200" SelectionMode="Extended" SelectionChanged="SelectedCoinsListBox_SelectionChanged"/>
+                <ListBox x:Name="SelectedCoinsListBox" Height="200" SelectionMode="Single"
+                         ItemsSource="{Binding SelectedCoins}"
+                         SelectedItem="{Binding SelectedSelectedCoin}"/>
             </StackPanel>
             <!-- 箭头按钮 -->
             <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                <Button x:Name="AddButton" Content="←" Width="40" Margin="0,5" Click="AddCoin_Click" IsEnabled="False"/>
-                <Button x:Name="RemoveButton" Content="→" Width="40" Margin="0,5" Click="RemoveCoin_Click" IsEnabled="False"/>
+                <Button x:Name="AddButton" Content="←" Width="40" Margin="0,5"
+                        Command="{Binding AddCoinCommand}"
+                        IsEnabled="{Binding CanAddCoin}"/>
+                <Button x:Name="RemoveButton" Content="→" Width="40" Margin="0,5"
+                        Command="{Binding RemoveCoinCommand}"
+                        IsEnabled="{Binding CanRemoveCoin}"/>
             </StackPanel>
             <!-- 可用币种 -->
             <StackPanel Grid.Column="2">
                 <Label Content="{Binding MenuItem.LblAvailableCoins}" HorizontalAlignment="Center"/>
-                <ListBox x:Name="AvailableCoinsListBox" Height="200" SelectionMode="Extended" SelectionChanged="AvailableCoinsListBox_SelectionChanged"/>
+                <ListBox x:Name="AvailableCoinsListBox" Height="200" SelectionMode="Single"
+                         ItemsSource="{Binding AvailableCoins}"
+                         SelectedItem="{Binding SelectedAvailableCoin}"/>
             </StackPanel>
         </Grid>
         <!-- 系统提示词编辑区域 -->
         <StackPanel Margin="0,10,0,0">
             <StackPanel Orientation="Horizontal">
                 <Label Content="{Binding MenuItem.LblSystemPrompt}" />
-                <Button x:Name="ResetPromptButton" Content="{Binding MenuItem.BtnResetPrompt}" Margin="10,0,0,0" Padding="10,2" Click="ResetPromptButton_Click" />
+                <Button x:Name="ResetPromptButton" Content="{Binding MenuItem.BtnResetPrompt}" Margin="10,0,0,0" Padding="10,2"
+                        Command="{Binding ResetPromptCommand}" />
             </StackPanel>
-            <TextBox x:Name="CustomPromptTextBox" Height="150" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" Margin="0,5,0,0"/>
+            <TextBox x:Name="CustomPromptTextBox" Height="150" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" Margin="0,5,0,0"
+                     Text="{Binding CustomPrompt, UpdateSourceTrigger=PropertyChanged}"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,10,0,0">
-            <Button Content="{Binding MenuItem.BtnCancel}" Width="75" Margin="5" Click="CancelButton_Click" />
-            <Button Content="{Binding MenuItem.BtnImport}" Width="75" Margin="5" Click="ImportButton_Click" />
+            <Button Content="{Binding MenuItem.BtnCancel}" Width="75" Margin="5"
+                    Command="{Binding CancelCommand}"
+                    CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" />
+            <Button Content="{Binding MenuItem.BtnImport}" Width="75" Margin="5"
+                    Command="{Binding ImportCommand}"
+                    CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" />
         </StackPanel>
     </StackPanel>
 </Window>

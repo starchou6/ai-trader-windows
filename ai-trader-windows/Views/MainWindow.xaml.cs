@@ -1,7 +1,4 @@
-﻿using System.Windows;
-using System.Windows.Controls;
-using AITrade.Entity.AI;
-using AITrader.Views;
+using System.Windows;
 
 namespace AITrade
 {
@@ -23,29 +20,8 @@ namespace AITrade
             RefreshDataGridHeaders();
         }
 
-        private void ShowInputPrompt_Click(object sender, RoutedEventArgs e)
-        {
-            if (sender is Button btn && btn.Tag is string prompt)
-            {
-                var dlg = new InputPromptDialog(prompt);
-                dlg.Owner = this;
-                dlg.ShowDialog();
-            }
-        }
-
-        private void ViewTradeLogDetail_Click(object sender, RoutedEventArgs e)
-        {
-            if (sender is Button btn && btn.Tag is DecisionRecord record)
-            {
-                var vm = DataContext as MainViewModel;
-                if (vm?.MenuItem != null)
-                {
-                    var dlg = new TradeLogDetailDialog(vm.MenuItem, record);
-                    dlg.Owner = this;
-                    dlg.ShowDialog();
-                }
-            }
-        }
+        // DataGridTextColumn.Header does not support binding directly in WPF
+        // This is a known limitation, so we need to update headers manually
         private void RefreshDataGridHeaders()
         {
             var menu = (DataContext as MainViewModel)?.MenuItem;

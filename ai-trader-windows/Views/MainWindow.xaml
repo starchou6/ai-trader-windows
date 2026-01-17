@@ -119,8 +119,8 @@
                                         <DataTemplate>
                                             <Button Content="{Binding DataContext.MenuItem.BtnViewDetail, RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                                     Padding="8,2" Height="22"
-                                                    Click="ViewTradeLogDetail_Click"
-                                                    Tag="{Binding}" />
+                                                    Command="{Binding DataContext.ViewTradeLogDetailCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                    CommandParameter="{Binding}" />
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
